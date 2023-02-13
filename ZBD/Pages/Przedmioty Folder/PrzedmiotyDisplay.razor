@@ -1,0 +1,36 @@
+﻿@page "/przedmioty/{id:int}"
+@using Services
+@using Models
+@inject IPrzedmiotyService przedmiotyService
+
+<PageTitle>@item.Nazwa</PageTitle>
+<h3>@item.Nazwa</h3>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>Ikona</th>
+			<th>Statystyki</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>
+				<img src="@item.Ikona"  />
+			</td>
+			<td>@((MarkupString)@item.Statystyki)</td>
+		</tr>
+	</tbody>
+</table>
+
+@code {
+	[Parameter]
+	public int id { get; set; }
+	Przedmioty item = new();
+
+	protected override void OnInitialized()
+	{
+		item = przedmiotyService.GetById(id);
+		base.OnInitialized();
+	}
+}

@@ -1,0 +1,67 @@
+﻿@page "/gracze/{nick}/edytuj"
+@using Models
+@using Services
+@inject IGraczeService graczeService
+@inject IBohaterowieService bohaterowieService
+@inject NavigationManager navManager
+
+<PageTitle>Edytuj @player.Nick</PageTitle>
+<h3>Edytuj @player.Nick</h3>
+
+<EditForm Model="player" OnValidSubmit="Save">
+	<DataAnnotationsValidator />
+	<div>
+		<label for="dywizja">Dywizja</label>
+		<InputText id="dywizja" @bind-Value="player.Dywizja" class="form-control"></InputText>
+		<ValidationMessage For="@(() => player.Dywizja)" />
+	</div>
+	<div>
+		<label for="poziom">Poziom</label>
+		<InputNumber id="poziom" @bind-Value="player.Poziom" class="form-control" min=1></InputNumber>
+		<ValidationMessage For="@(() => player.Poziom)" />
+	</div>
+	<div>
+		<label for="ulubionybohater">Ulubiony bohater</label>
+		<InputSelect id="ulubionybohater" @bind-Value="player.UlubionyBohater" class="form-control">
+			<option value="@string.Empty">Brak</option>
+			@foreach (var champion in champions)
+			{
+				<option value="@champion.Nazwa">@champion.Nazwa</option>
+			}
+		</InputSelect>
+	</div>
+	<br />
+	<button type="submit" class="btn btn-primary" @onclick="Save">Aktualizuj</button>
+</EditForm>
+
+
+@code {
+	[Parameter]
+	public string? nick { get; set; }
+	private string message = string.Empty;
+	Gracze player = new();
+	List<Bohaterowie> champions = new();
+
+	protected override void OnInitialized()
+	{
+		player = graczeService.GetByNick(nick);
+		champions = bohaterowieService.GetAll();
+		base.OnInitialized();
+	}
+
+	private void Save()
+	{
+		message = "Zaczekaj...";
+
+		if (graczeService.Update(player))
+		{
+			message = "Pomyślnie zaktualizowano Twoje dane.";
+			//player = new();
+			navManager.NavigateTo($"/gracze/{nick}");
+		}
+		else
+		{
+			message = "Nie udało się zapisać zmian.";
+		}
+	}
+}

@@ -1,0 +1,49 @@
+﻿@page "/przedmioty"
+@using Services
+@using Models
+@inject IPrzedmiotyService przedmiotyService
+@inject NavigationManager navManager
+
+<PageTitle>Przedmioty</PageTitle>
+<h3>Lista Przedmiotów</h3>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>Ikona</th>
+			<th>Nazwa</th>
+			<th>Cena</th>
+			<th>Wartość sprzedaży</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in items)
+		{
+			<tr>
+				<img src="@item.Ikona" alt="@item.Nazwa" />
+				<td width="250px">@item.Nazwa</td>
+				<td width="250px">@item.Cena</td>
+				<td>@item.WartoscSprzedazy</td>
+				<td>
+					<button class="btn btn-primary" @onclick="(() => ShowItem(item.IdPrzed))"><i class="oi oi-info"></i></button>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+@code {
+	List<Przedmioty> items = new();
+
+	protected override void OnInitialized()
+	{
+		items = przedmiotyService.GetAll();
+		base.OnInitialized();
+	}
+
+	private void ShowItem(int id)
+	{
+		navManager.NavigateTo($"/przedmioty/{id}");
+	}
+}

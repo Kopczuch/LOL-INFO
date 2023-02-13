@@ -1,0 +1,98 @@
+﻿@page "/gracze/{nick}"
+@using Services
+@using Models
+@using Microsoft.Data.SqlClient
+@inject IGraczeService graczeService
+@inject NavigationManager navManager
+
+<PageTitle>@player.Nick</PageTitle>
+<h3>@player.Nick <button class="btn btn-primary" @onclick="(() => ShowPlayer(player.Nick))"><i class="oi oi-pencil"></i></button></h3>
+
+<div class="table">
+    <table class="table">
+        <tr>
+            <th>Dywizja</th>
+            <th>Poziom</th>
+            <th>Ulubiony bohater</th>
+            <th>Procent wygranych</th>
+            <th>Średnie KDA</th>
+        </tr>
+        <tr>
+            <td>@player.Dywizja</td>
+            <td>@player.Poziom</td>
+            <td>@player.UlubionyBohater</td>
+            <td>@wr</td>
+            <td>@avgKda</td>
+        </tr>
+    </table>
+</div>
+
+
+<br />
+<br />
+
+<div class="table">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id meczu</th>
+                <th>Rezultat</th>
+                <th>Z/Ś/A</th>
+                <th>CS</th>
+                <th>Zdobyte złoto</th>
+                <th>Czas gry</th>
+                <th>Zadane obrażenia</th>
+                <th>Strona</th>
+                <th>Bohater</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+                @foreach (var game in player.GryIdMeczus)
+                {
+                    
+                    <tr>
+                        <td>@game.IdMeczu</td>
+                        <td>@game.Rezultat</td>
+                        <td>@game.Zabojstwa/@game.Smierci/@game.Asysty</td>
+                        <td>@game.CreepScore</td>
+                        <td>@game.ZdobyteZloto</td>
+                        <td>@game.CzasGry</td>
+                        <td>@game.ZadaneObrazenia</td>
+                        <td>@game.Strona</td>
+                        <td>@game.BohaterowieNazwa</td>
+                        <td>
+                            <button class="btn btn-primary" @onclick="(() => ShowGame(game.IdMeczu))"><i class="oi oi-info"></i></button>
+                        </td>
+                    </tr>
+                }   
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public string? nick { get; set; }
+    Gracze player = new Gracze();
+    private string? wr { get; set; }
+    private string? avgKda { get; set; }
+
+    protected override void OnInitialized()
+    {
+        player = graczeService.GetByNick(nick);
+        wr = graczeService.GetWr(nick, 'N');
+        avgKda = graczeService.GetAvgKda(nick, 'N');
+
+        base.OnInitialized();
+    }
+
+    private void ShowPlayer(string nick)
+    {
+        navManager.NavigateTo($"gracze/{nick}/edytuj");
+    }
+
+    private void ShowGame(long id)
+    {
+        navManager.NavigateTo($"gry/{id}");
+    }
+}

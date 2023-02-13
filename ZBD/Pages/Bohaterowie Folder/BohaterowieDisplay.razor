@@ -1,0 +1,102 @@
+﻿@page "/bohaterowie/{name}"
+@using Services
+@using Models
+@inject IBohaterowieService bohaterowieService
+@inject NavigationManager navigationManager
+
+<PageTitle>@name</PageTitle>
+<h3>@name - @champion.Tytuł <button class="btn btn-primary" @onclick="(() => ShowEditChampion(champion.Nazwa))"><i class="oi oi-pencil"></i></button></h3>
+<h4>@champion.Klasa</h4>
+
+<table>
+    <tbody>
+        <tr>
+            <td rowspan="3" colspan="1">
+                <div class="image">
+                    <img src="@champion.Obraz">
+                </div>
+            </td>
+            <div>
+                <td><h5>@champion.KrotkiOpis</h5></td>
+            </div>
+        </tr>
+        <tr>
+            <td>
+                <div>
+                    <table class="table" title="Statystyki">
+                        <thead>
+                            <tr>
+                                <th>Atak</th>
+                                <th>Obrona</th>
+                                <th>Magia</th>
+                                <th>Trudność</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@champion.Atak</td>
+                                <td>@champion.Obrona</td>
+                                <td>@champion.Magia</td>
+                                <td>@champion.Trudnosc</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div>
+                    <label><strong>Kontry:</strong></label>
+                    @foreach (var counter in champion.Kontras)
+                    {
+                        <ul>
+                            <li>@counter.Nazwa <button class="btn btn-primary" @onclick="(() => ShowEditCounter(champion.Nazwa, counter.Nazwa))"><i class="oi oi-pencil"></i></button></li>
+                        </ul>
+                    }
+                </div>
+                
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+@code {
+    [Parameter]
+    public string? name { get; set; }
+
+    Bohaterowie champion = new Bohaterowie();
+
+    protected override void OnInitialized()
+    {
+        champion = bohaterowieService.GetByName(name);
+        base.OnInitialized();
+    }
+
+    //protected override void OnAfterRender(bool firstRender)
+    //{
+    //    champion = bohaterowieService.FindByName(name);
+    //    base.OnAfterRender(firstRender);
+    //}
+
+
+    //protected override void OnParametersSet()
+    //{
+    //    champion = bohaterowieService.FindByName(name);
+
+    //    base.OnParametersSet();
+		//}
+
+    void ShowEditChampion(string name)
+    {
+        navigationManager.NavigateTo($"bohaterowie/edytuj/{name}");
+    }
+
+    private void ShowEditCounter(string bohater, string kontra)
+    {
+        navigationManager.NavigateTo($"/bohaterowie/kontry/{bohater}/{kontra}");
+    }
+}

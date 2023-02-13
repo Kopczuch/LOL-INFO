@@ -1,0 +1,65 @@
+﻿@page "/gry/{id:long}"
+@using Services
+@using Models
+@inject IGryService gryService
+
+<PageTitle>Szczegóły gry</PageTitle>
+<h3>Szczegóły gry</h3>
+
+<div class="table">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id meczu</th>
+                <th>Rezultat</th>
+                <th>Z/Ś/A</th>
+                <th>CS</th>
+                <th>Zdobyte złoto</th>
+                <th>Czas gry</th>
+                <th>Zadane obrażenia</th>
+                <th>Strona</th>
+                <th>Bohater</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@game.IdMeczu</td>
+                <td>@game.Rezultat</td>
+                <td>@game.Zabojstwa/@game.Smierci/@game.Asysty</td>
+                <td>@game.CreepScore</td>
+                <td>@game.ZdobyteZloto</td>
+                <td>@game.CzasGry</td>
+                <td>@game.ZadaneObrazenia</td>
+                <td>@game.Strona</td>
+                <td>@game.BohaterowieNazwa</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div>
+    @*<label><strong>Zakupione przedmioty:</strong></label>
+    @foreach (var itemId in game.IdZakupionegoPrzedmiotus)
+    {
+        <ul>
+            <li>@itemId</li>
+        </ul>
+    }*@
+</div>
+
+<div>Zabójstwa drużyny: @game.ZabojstwaDruzyny</div>
+
+
+@code {
+    [Parameter]
+    public long id { get; set; }
+    Gry game = new();
+
+    protected override void OnInitialized()
+    {
+        game = gryService.GetById(id);
+
+        base.OnInitialized();
+    }
+}

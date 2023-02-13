@@ -1,0 +1,264 @@
+﻿@page "/bohaterowie/dodaj"
+@page "/bohaterowie/edytuj/{name}"
+@using Services
+@using Models
+@inject IBohaterowieService bohaterowieService
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navigationManager
+
+<PageTitle>@Title</PageTitle>
+<h3>@Title</h3>
+
+<div class="row">
+
+	<div class="col-md-6">
+		<EditForm Model="@champion" OnValidSubmit="Save">
+			<DataAnnotationsValidator/>
+			<ValidationSummary/>
+
+			@if (name == null)
+			{
+				<div class="form-group">
+					<label for="Nazwa">Nazwa</label>
+					<InputText class="form-control" @bind-Value="champion.Nazwa"></InputText>
+				</div>
+			}
+
+			<div class="form-group">
+				<label for="Tytuł">Tytuł</label>
+				<InputText class="form-control" @bind-Value="champion.Tytuł"></InputText>
+			</div>
+
+			<div class="form-group">
+				<label for="KrotkiOpis">Opis</label>
+				<InputTextArea class="form-control" @bind-Value="champion.KrotkiOpis"></InputTextArea>
+			</div>
+
+			<div class="form-group">
+				<label for="Atak">Atak</label>
+				<InputNumber class="form-control" @bind-Value="champion.Atak" min=0 max=10></InputNumber>
+			</div>
+
+			<div class="form-group">
+				<label for="Obrona">Obrona</label>
+				<InputNumber class="form-control" @bind-Value="champion.Obrona" min=0 max=10></InputNumber>
+			</div>
+
+			<div class="form-group">
+				<label for="Magia">Magia</label>
+				<InputNumber class="form-control" @bind-Value="champion.Magia" min=0 max=10></InputNumber>
+			</div>
+
+			<div class="form-group">
+				<label for="Trudnosc">Trudnosc</label>
+				<InputNumber class="form-control" @bind-Value="champion.Trudnosc" min=0 max=10></InputNumber>
+			</div>
+
+			<div>
+				<label for="obraz">Obraz</label>
+				<InputText id="obraz" @bind-Value="champion.Obraz" class="form-control"></InputText>
+			</div>
+
+			@*<div>
+				<label for="obraz">Obraz</label>
+				<InputFile OnChange="OnFileChangeImage" class="form-control"></InputFile>
+				<ValidationMessage For="@(() => champion.Obraz)" />
+			</div>*@
+
+			<div>
+				<label for="ikona">Ikona</label>
+				<InputText id="ikona" @bind-Value="champion.Ikona" class="form-control"></InputText>
+			</div>
+
+			@*<div>
+				<label for="ikona">Ikona</label>
+				<InputFile OnChange="OnFileChangeIcon" class="form-control"></InputFile>
+				<ValidationMessage For="@(() => champion.Ikona)" />
+			</div>*@
+
+			<div>
+				<label for="klasa">Klasa</label>
+				<InputSelect id="klasa" @bind-Value="champion.Klasa" class="form-control">
+					<option value="0">Wybierz</option>
+					@foreach (var role in roles)
+					{
+						<option value="@role">@role</option>
+					}
+					@*<option value="Assassin" selected>Assassin</option>
+					<option value="Fighter">Fighter</option>
+					<option value="Mage">Mage</option>
+					<option value="Marksman">Marksman</option>
+					<option value="Support">Support</option>
+					<option value="Tank">Tank</option>*@
+				</InputSelect>
+			</div>
+
+			@*<div>
+				<label for="kontra1">Kontra 1</label>
+				<InputSelect for="kontra1" @bind-Value="firstCounterName" class="form-control">
+					@foreach (var counter in champions)
+					{
+						<option value="@counter">@counter.Nazwa</option>
+					}
+				</InputSelect>
+			</div>
+
+			<div>
+				<label for="kontra2">Kontra 2</label>
+				<InputSelect for="kontra2" @bind-Value="secondCounterName" class="form-control">
+					@foreach (var counter in champions)
+					{
+						<option value="@counter">@counter.Nazwa</option>
+					}
+				</InputSelect>
+			</div>
+
+			<div>
+				<label for="kontra3">Kontra 3</label>
+				<InputSelect for="kontra3" @bind-Value="thirdCounterName" class="form-control">
+					@foreach (var counter in champions)
+					{
+						<option value="@counter">@counter.Nazwa</option>
+					}
+				</InputSelect>
+			</div>*@
+
+
+			<div class="my-2">
+				@message
+				<br />
+				@errorMessage
+			</div>
+
+			<div class="my-2">
+				<button type="submit" class="btn btn-primary">Zatwierdź</button>
+				@if(name != null)
+				{
+					<button type="button" class="btn btn-danger" @onclick="async ()=> await Delete(champion)">Usuń</button>
+				}
+			</div>
+
+
+		</EditForm>
+
+	</div>
+
+</div>
+
+@*<h3>@champion.Bohaters.ElementAt(0).Nazwa</h3>*@
+
+@code {
+	[Parameter]
+	public string? name { get; set; }
+	private string message = string.Empty;
+	private string errorMessage = string.Empty;
+	Bohaterowie champion = new();
+	private string Title = "Dodaj bohatera";
+
+	private List<Bohaterowie> champions = new();
+
+	private string firstCounterName { get; set; }
+	private string secondCounterName { get; set; }
+	private string thirdCounterName { get; set; }
+
+	List<string> roles = new List<string>
+	{
+		"Assassin",
+		"Fighter",
+		"Mage",
+		"Marksman",
+		"Support",
+		"Tank"
+	};
+
+	protected override void OnInitialized()
+	{
+
+		champions = bohaterowieService.GetAll();
+		if (name != null)
+		{
+			Title = "Edytuj " + name;
+			champion = bohaterowieService.GetByName(name);
+		}
+		else
+		{
+			Title = "Dodaj bohatera";
+		}
+		base.OnInitialized();
+
+
+	}
+
+	private void Save()
+	{
+		message = "Zaczekaj...";
+
+		//ChangeCounters(name, firstCounterName, secondCounterName, thirdCounterName);
+		string result = bohaterowieService.AddUpdate(champion, name);
+		if(result == "ok")
+		{
+			message = "Pomyślnie dodano bohatera.";
+			champion = new();
+			navigationManager.NavigateTo("/bohaterowie");
+		}
+		else
+		{
+			message = "Nie udało się zapisać.";
+			errorMessage = result;
+		}
+	}
+
+	private async Task Delete(Bohaterowie champion)
+	{
+		bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Czy jesteś pewien?");
+		if (confirmed)
+		{
+			if(bohaterowieService.Delete(champion.Nazwa))
+			{
+				champions.Remove(champion);
+			}
+		}
+		navigationManager.NavigateTo("/bohaterowie");
+	}
+
+	private void ChangeCounters(string name, string firstCounterName, string secondCounterName, string thirdCounterName)
+	{
+		champion.Kontras.Clear();
+
+		Bohaterowie firstCounter = new();
+		Bohaterowie secondCounter = new();
+		Bohaterowie thirdCounter = new();
+
+		firstCounter = bohaterowieService.GetByName(firstCounterName);
+		secondCounter = bohaterowieService.GetByName(secondCounterName);
+		thirdCounter = bohaterowieService.GetByName(thirdCounterName);
+
+		champion.Kontras.Add(firstCounter);
+		champion.Kontras.Add(secondCounter);
+		champion.Kontras.Add(thirdCounter);
+
+
+	}
+
+	async Task OnFileChangeIcon(InputFileChangeEventArgs e)
+	{
+		var format = "img/png";
+		var resizedImage = await e.File.RequestImageFileAsync(format, 200, 200);
+		var buffer = new byte[resizedImage.Size];
+		await resizedImage.OpenReadStream().ReadAsync(buffer);
+		var imageData = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+		champion.Ikona = imageData;
+	}
+
+	async Task OnFileChangeImage(InputFileChangeEventArgs e)
+	{
+		var format = "img/png";
+		var resizedImage = await e.File.RequestImageFileAsync(format, 300, 560);
+		var buffer = new byte[resizedImage.Size];
+		await resizedImage.OpenReadStream().ReadAsync(buffer);
+		var imageData = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+		champion.Obraz = imageData;
+	}
+
+
+}

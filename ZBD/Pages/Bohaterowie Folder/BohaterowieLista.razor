@@ -1,0 +1,98 @@
+﻿@page "/bohaterowie"
+@using Services;
+@using Models;
+@inject IBohaterowieService bohaterowieService
+@inject NavigationManager navigationManager
+
+<PageTitle>Bohaterowie</PageTitle> 
+<h3>Lista bohaterów <button class="btn btn-primary" @onclick="(() => AddChampion())">Dodaj bohatera</button></h3>
+
+@if (champions == null)
+{
+	<p><strong>Ładowanie...</strong></p>
+}
+else
+{
+	@*<BlazoredTypeahead SearchMethod="@SearchChampion"
+					TValue="Bohaterowie"
+				   TItem="Bohaterowie"
+					Value="selectedChampion"
+					ValueChanged="HandleSearch"
+				   ValueExpression="@(() => selectedChampion)"
+					placeholder="Wyszukaj...">
+	<SelectedTemplate>
+		@context.Nazwa
+	</SelectedTemplate>
+	<ResultTemplate>
+		@context.Nazwa
+	</ResultTemplate>
+	<NotFoundTemplate>
+		Nie znaleziono postaci.
+	</NotFoundTemplate>
+	</BlazoredTypeahead>*@
+
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Ikona</th>
+				<th>Nazwa</th>
+				<th>Tytuł</th>
+				<th>Klasa</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var champion in champions)
+			{
+				<tr>
+					<img src="@champion.Ikona" width="120px" height="120px" alt="@champion.Nazwa" />
+					<td>@champion.Nazwa</td>
+					<td>@champion.Tytuł</td>
+					<td>@champion.Klasa</td>
+					<td>
+						<button class="btn btn-primary" @onclick="(() => ShowChampion(champion.Nazwa))"><i class="oi oi-info"></i></button>
+					</td>
+
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+
+
+@code {
+	//private Models.Bohaterowie selectedChampion;
+	//private void HandleSearch(Models.Bohaterowie champion)
+	//{
+	//	if (champion == null) return;
+	//	selectedChampion = champion;
+	//	NavigationManager.NavigateTo($"bohaterowie/{selectedChampion.Nazwa}");
+	//}
+
+	//private async Task<IEnumerable<Models.Bohaterowie>> SearchChampion(string searchText)
+	//{
+	//	await BohaterowieService.SearchChampion(searchText);
+	//	return BohaterowieService.Champions;
+	//}
+
+	private List<Models.Bohaterowie> champions = new();
+
+	protected override void OnInitialized()
+	{
+		champions = bohaterowieService.GetAll();
+		base.OnInitialized();
+	}
+
+
+	private void ShowChampion(string name)
+	{
+		navigationManager.NavigateTo($"bohaterowie/{name}");
+	}
+
+	private void AddChampion()
+	{
+		navigationManager.NavigateTo("bohaterowie/dodaj");
+	}
+}

@@ -1,0 +1,81 @@
+﻿@page "/bohaterowie/kontry"
+@using Services
+@using Models
+@using Microsoft.Data.SqlClient
+@inject ICounterService counterService
+@inject NavigationManager navManager
+
+<h3>KontryLista</h3>
+
+<div class="table">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Bohater</th>
+                <th>Kontra</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var counter in counters)
+            {
+                <tr>
+                    <td>@counter.bohater</td>
+                    <td>@counter.kontra</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => ShowEditCounter(counter.bohater, counter.kontra))"><i class="oi oi-arrow-right"></i></button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+
+@code {
+
+    private List<Counter> counters;
+
+    protected override void OnInitialized()
+    {
+        counters = counterService.GetAll();
+        base.OnInitialized();
+    }
+
+    private void ShowEditCounter(string bohater, string kontra)
+    {
+        navManager.NavigateTo($"/bohaterowie/kontry/{bohater}/{kontra}");
+    }
+
+    //public class Counter
+    //{
+    //    public string? bohater { get; set; }
+    //    public string? kontra { get; set; }
+    //}
+
+    //private List<Counter> GetAll()
+    //{
+    //    var connection = new SqlConnection("Data Source=PC\\SQLEXPRESS;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+    //    SqlCommand cmd = new SqlCommand("select * from dbo.kontry;", connection);
+    //    //cmd.Parameters.AddWithValue("@pNick", nick);
+    //    //cmd.Parameters.AddWithValue("@pro", pro);
+    //    connection.Open();
+    //    SqlDataReader rdr = cmd.ExecuteReader();
+
+    //    List<Counter> counters = new List<Counter>();
+
+    //    while(rdr.Read())
+    //    {
+    //        counters.Add(new Counter
+    //        {
+    //            bohater = rdr["bohater"].ToString(),
+    //            kontra = rdr["kontra"].ToString()
+    //        });
+    //    }
+
+    //    connection.Close();
+    //    return counters;
+    //}
+    
+}

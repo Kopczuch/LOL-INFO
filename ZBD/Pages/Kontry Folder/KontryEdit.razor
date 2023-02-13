@@ -1,0 +1,58 @@
+﻿@page "/bohaterowie/kontry/{bohater}/{kontra}"
+@using Services
+@using Models
+@inject ICounterService counterService
+@inject IBohaterowieService bohaterowieService
+@inject NavigationManager navManager
+
+<h3>Edytuj kontrę dla @bohater</h3>
+
+<EditForm Model="newCounter" OnValidSubmit="Save">
+	<label for="kontra">Kontra</label>
+	<InputSelect id="kontra" @bind-Value="newCounter.nowaKontra" class="form-control">
+		<option value="@string.Empty">Wybierz</option>
+		@foreach (var champion in champions)
+		{
+			<option value="@champion.Nazwa">@champion.Nazwa</option>
+		}
+	</InputSelect>
+	<button type="submit" class="btn btn-primary">Zatwierdź</button>
+</EditForm>
+
+<h3>@message</h3>
+
+@code {
+	[Parameter]
+	public string? bohater { get; set; }
+	[Parameter]
+	public string? kontra { get; set; }
+
+	public string message = string.Empty;
+
+	List<Bohaterowie> champions = new();
+
+	NewCounter newCounter = new();
+
+	public class NewCounter
+	{
+	    public string? nowaKontra { get; set; }
+	}
+
+	protected override void OnInitialized()
+	{
+		champions = bohaterowieService.GetAll();
+		base.OnInitialized();
+	}
+
+	private void Save()
+	{
+		if(counterService.EditCounter(bohater, kontra, newCounter.nowaKontra))
+		{
+			navManager.NavigateTo($"/bohaterowie/{bohater}");
+		}
+		else
+		{
+			message = "Nie udało się zmienić.";
+		}
+	}
+}
