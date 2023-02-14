@@ -36,6 +36,31 @@
         </table>
 </div>
 
+<strong>Turnieje</strong>
+<div class="table">
+    <table class="table">
+        <tr>
+            <th>Nazwa</th>
+            <th>Rodzaj</th>
+            <th>Data</th>
+            <th>Zajęte miejsce</th>
+            <th>Ostatni wynik</th>
+            <th>Nagroda</th>
+        </tr>
+        @foreach (var tournament in tournaments)
+        {
+            <tr>
+                <td>@tournament.NazwaTurnieju</td>
+                <td>@tournament.Rodzaj</td>
+                <td>@tournament.Data</td>
+                <td>@tournament.ZajeteMiejsce</td>
+                <td>@tournament.OstatniWynik</td>
+                <td>@tournament.Nagroda</td>
+            </tr>
+        }
+    </table>
+</div>
+
 @code {
     [Parameter]
     public string id { get; set; }

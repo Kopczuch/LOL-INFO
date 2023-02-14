@@ -136,7 +136,7 @@
 				{
 					<button type="button" class="btn btn-danger" @onclick="async ()=> await Delete(champion)">Usuń</button>
 				}
-				&nbsp;<button type="button" class="btn btn-secondary" @onclick="(() => Cancel())">Anuluj</button>
+				&nbsp;<button type="button" class="btn btn-secondary" @onclick="(() => Cancel(champion.Nazwa))">Anuluj</button>
 			</div>
 
 
@@ -216,9 +216,9 @@
 		}
 	}
 
-	private void Cancel()
+	private void Cancel(string name)
 	{
-		navManager.NavigateTo("/bohaterowie");
+		navManager.NavigateTo($"/bohaterowie/{name}");
 	}
 
 	private void ChangeCounters(string name, string firstCounterName, string secondCounterName, string thirdCounterName)
