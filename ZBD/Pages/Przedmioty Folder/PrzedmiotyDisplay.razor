@@ -3,10 +3,12 @@
 @using Models
 @inject IPrzedmiotyService przedmiotyService
 @inject IComponentService componentService
+@inject IKomponentyPrzedmiotowService komponentyService
+@inject IJSRuntime jsRuntime
 @inject NavigationManager navManager
 
 <PageTitle>@item.Nazwa</PageTitle>
-<h3>@item.Nazwa <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditItem(item.IdPrzed))"></button></h3>
+<h3>@item.Nazwa <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditItem(id))"></button></h3>
 
 <table class="table">
 	<thead>
@@ -18,7 +20,7 @@
 	<tbody>
 		<tr>
 			<td>
-				<img src="@item.Ikona"/>
+				<img src="@item.Ikona" width="64px" height="64px"/>
 			</td>
 			<td>@((MarkupString)@item.Statystyki)</td>
 		</tr>
@@ -31,29 +33,58 @@
 	<h4>Komponenty:</h4>
 }
 
-@foreach (var component in components)
-{
-	if(component.Level > 0)
-	{
-		<h5><img src="@przedmiotyService.GetById(component.id_przed).Ikona"/> @przedmiotyService.GetById(component.id_przed).Nazwa</h5>
-	}
-}
+<table class="table">
+	<thead>
+		<tr>
+			<th></th>
+			<th></th>
+			<th></th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var component in components)
+		{
+			<tr>
+						<td>
+							<img src="@przedmiotyService.GetById(component.id_przed).Ikona" width="64px" height="64px"/>
+						</td>
+						<td>
+							@przedmiotyService.GetById(component.id_przed).Nazwa
+						</td>
+						<td>
+							<button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditComponent(component.id))"></button>
+						</td>
+						<td>
+							<button class="btn btn-danger oi oi-trash" @onclick="async ()=> await DeleteComponent(component.id)"></button>
+						</td>
+			</tr>
+		}
+	</tbody>
+</table>
 
 <br />
 <button class="btn btn-primary" @onclick="(() => ShowAddComponent(item.IdPrzed))">Dodaj komponent</button>
 <br />
+<h3>@message</h3>
 <br />
+<br />
+
+
 
 @code {
 	[Parameter]
 	public int id { get; set; }
 	Przedmioty item = new();
 	List<Component> components = new();
+	List<KomponentyPrzedmiotow> komponenty = new();
+	private string message = string.Empty;
 
 	protected override void OnInitialized()
 	{
 		item = przedmiotyService.GetById(id);
 		components = componentService.GetComponents(id);
+		komponenty = komponentyService.GetAll();
 		base.OnInitialized();
 	}
 
@@ -65,5 +96,25 @@
 	private void ShowAddComponent(int idPrzed)
 	{
 		navManager.NavigateTo($"/przedmioty/komponenty/dodaj/{idPrzed}");
+	}
+
+	private void ShowEditComponent(int id)
+	{
+		navManager.NavigateTo($"/przedmioty/komponenty/{id}/edytuj");
+	}
+
+	private async Task DeleteComponent(int idKomponentu)
+	{
+		bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Czy jesteś pewien, że chcesz usunąć kontrę?");
+		if (confirmed)
+		{
+			if (komponentyService.Delete(idKomponentu))
+			{
+				message = "Pomyślnie usunięto!";
+				navManager.NavigateTo($"/przedmioty/{id}", true);
+			}
+			else
+				message = "Nie udało się usunąć.";
+		}
 	}
 }

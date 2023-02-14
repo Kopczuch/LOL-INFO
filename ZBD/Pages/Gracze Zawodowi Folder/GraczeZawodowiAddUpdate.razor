@@ -1,0 +1,183 @@
+﻿@page "/graczezawodowi/dodaj"
+@page "/graczezawodowi/{nick}/edytuj"
+@using Services
+@using Models
+@inject IGraczeZawodowiService proService
+@inject IBohaterowieService bohaterowieService
+@inject IDruzynyService druzynyService
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navManager
+
+<PageTitle>@Title</PageTitle>
+<h3>@Title</h3>
+
+<EditForm Model="pro" OnValidSubmit="Save">
+	<DataAnnotationsValidator/>
+	<ValidationSummary/>
+	@if (nick == null)
+	{
+		<label id="nick">Nick</label>
+		<InputText id="nick" @bind-Value="pro.Nick" class="form-control"/>
+	}
+
+	<label id="name">Imię i nazwisko</label>
+	<InputText id="name" @bind-Value="pro.ImieINazwisko" class="form-control" />
+
+	<label id="country">Kraj</label>
+	<InputText id="country" @bind-Value="pro.Kraj" class="form-control" />
+
+	<label id="role">Rola</label>
+	<InputSelect id="role" @bind-Value="pro.Rola" class="form-control">
+		<option value="@string.Empty">Wybierz</option>
+		@foreach (var role in roles)
+		{
+			<option value="@role">@role</option>
+		}
+	</InputSelect>
+
+	<label id="residency">Rezydencja</label>
+	<InputSelect id="residency" @bind-Value="pro.Rezydencja" class="form-control">
+		<option value="@string.Empty">Wybierz</option>
+		@foreach (var residency in residencies)
+		{
+			<option value="@residency">@residency</option>
+		}
+	</InputSelect>
+
+	<label id="img">Zdjęcie</label>
+	<InputText id="img" @bind-Value="pro.Zdjecie" class="form-control" />
+
+	<label id="bday">Data Urodzin</label>
+	<InputDate id="bday" @bind-Value="pro.DataUrodzin" class="form-control"/>
+
+	<label id="teamID">ID Drużyny</label>
+	<InputSelect id="teamID" @bind-Value="pro.IdDruzyny" class="form-control">
+		<option value="@string.Empty">Wybierz</option>
+		@foreach (var team in teams)
+		{
+			<option value="@team.IdDruzyny">@team.IdDruzyny</option>
+		}
+	</InputSelect>
+
+	<label id="favChamp">Ulubiony bohater</label>
+	<InputSelect id="favChamp" @bind-Value="pro.UlubionyBohater" class="form-control">
+		<option value="@string.Empty">Wybierz</option>
+		@foreach (var champion in champions)
+		{
+			<option value="@champion.Nazwa">@champion.Nazwa</option>
+		}
+	</InputSelect>
+
+	<div class="my-2">
+		@message
+		<br />
+		@errorMessage
+	</div>
+
+	<div class="my-2">
+		<button type="submit" class="btn btn-primary">Zatwierdź</button>&nbsp;
+		@if (nick != null)
+		{
+			<button type="button" class="btn btn-danger" @onclick="async ()=> await Delete(pro)">Usuń</button>
+		}
+		&nbsp;<button type="button" class="btn btn-secondary" @onclick="(() => Cancel())">Anuluj</button>
+	</div>
+
+</EditForm>
+
+@code {
+	[Parameter]
+	public string? nick { get; set; }
+	private string message = string.Empty;
+	private string errorMessage = string.Empty;
+	GraczeZawodowi pro = new();
+	private string Title = "Dodaj Pro Gracza";
+
+	private List<Bohaterowie> champions = new();
+	private List<Druzyny> teams = new();
+
+	private List<string> roles = new List<string>
+	{
+		"Top Laner",
+		"Jungler",
+		"Mid Laner",
+		"Bot Laner",
+		"Support"
+	};
+
+	private List<string> residencies = new List<string>
+	{
+		"Brazil",
+		"China",
+		"CIS",
+		"EMEA",
+		"Europe",
+		"Japan",
+		"Korea",
+		"Latin America",
+		"North America",
+		"Oceania",
+		"PCS",
+		"Turkey",
+		"Vietnam"
+	};
+
+	protected override void OnInitialized()
+	{
+		champions = bohaterowieService.GetAll();
+		teams = druzynyService.GetAll();
+
+		if (nick != null)
+		{
+			Title = "Edytuj" + nick;
+			pro = proService.GetByNick(nick);
+		}
+		base.OnInitialized();
+	}
+
+	private void Save()
+	{
+		message = "Zaczekaj...";
+
+		string result = proService.AddUpdate(pro);
+		if (result == "okAdd")
+		{
+			message = "Pomyślnie dodano gracza.";
+			navManager.NavigateTo("/graczezawodowi");
+		}
+		else if (result == "okUpdate")
+		{
+			message = "Pomyślnie zaktualizowano gracza.";
+			navManager.NavigateTo($"/graczezawodowi/{nick}");
+		}
+		else
+		{
+			message = "Nie udało się zapisać.";
+			errorMessage = result;
+		}
+	}
+
+	private async Task Delete(GraczeZawodowi pro)
+	{
+		bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Czy jesteś pewien, że chcesz usunąć pro gracza?");
+		if (confirmed)
+		{
+			if (proService.Delete(pro.Nick))
+			{
+				navManager.NavigateTo("/graczezawodowi");
+			}
+		}
+	}
+
+	private void Cancel()
+	{
+		if(nick != null)
+		{
+			navManager.NavigateTo($"/graczezawodowi/{nick}", true);
+		}
+		else
+		{
+			navManager.NavigateTo("/graczezawodowi", true);
+		}
+	}
+}

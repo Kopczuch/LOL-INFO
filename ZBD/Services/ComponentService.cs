@@ -5,9 +5,10 @@ namespace ZBD.Services
 {
     public class ComponentService : IComponentService
     {
+        ConnectionString conn = new();
         public List<Component> GetComponents(int id)
         {
-            var connection = new SqlConnection("Data Source=PC\\SQLEXPRESS;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            var connection = new SqlConnection(conn.ConnString);
             SqlCommand cmd = new SqlCommand("EXEC znajdz_komponenty @id;", connection);
             cmd.Parameters.AddWithValue("@id", id);
             connection.Open();
@@ -19,6 +20,7 @@ namespace ZBD.Services
             {
                 components.Add(new Component
                 {
+                    id = int.Parse(rdr["id"].ToString()),
                     id_przed = int.Parse(rdr["id_przed"].ToString()),
                     nazwa = rdr["nazwa"].ToString(),
                     Level = int.Parse(rdr["Level"].ToString())

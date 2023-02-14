@@ -1,5 +1,5 @@
 ﻿@page "/bohaterowie/dodaj"
-@page "/bohaterowie/edytuj/{name}"
+@page "/bohaterowie/{name}/edytuj"
 @using Services
 @using Models
 @inject IBohaterowieService bohaterowieService
@@ -158,9 +158,9 @@
 
 	//private List<Bohaterowie> champions = new();
 
-	private string firstCounterName { get; set; }
-	private string secondCounterName { get; set; }
-	private string thirdCounterName { get; set; }
+	//private string firstCounterName { get; set; }
+	//private string secondCounterName { get; set; }
+	//private string thirdCounterName { get; set; }
 
 	List<string> roles = new List<string>
 	{
@@ -190,11 +190,15 @@
 
 		//ChangeCounters(name, firstCounterName, secondCounterName, thirdCounterName);
 		string result = bohaterowieService.AddUpdate(champion, name);
-		if(result == "ok")
+		if(result == "okAdd")
 		{
 			message = "Pomyślnie dodano bohatera.";
-			champion = new();
-			navManager.NavigateTo("/bohaterowie");
+			navManager.NavigateTo("/bohaterowie", true);
+		}
+		else if(result == "okUpdate")
+		{
+			message = "Pomyślnie zaktualizowano bohatera.";
+			navManager.NavigateTo($"/bohaterowie/{name}", true);
 		}
 		else
 		{
@@ -211,34 +215,34 @@
 			if(bohaterowieService.Delete(champion.Nazwa))
 			{
 				//champions.Remove(champion);
-				navManager.NavigateTo("/bohaterowie");
+				navManager.NavigateTo("/bohaterowie", true);
 			}
 		}
 	}
 
 	private void Cancel(string name)
 	{
-		navManager.NavigateTo($"/bohaterowie/{name}");
+		navManager.NavigateTo($"/bohaterowie/{name}", true);
 	}
 
-	private void ChangeCounters(string name, string firstCounterName, string secondCounterName, string thirdCounterName)
-	{
-		champion.Kontras.Clear();
+	//private void ChangeCounters(string name, string firstCounterName, string secondCounterName, string thirdCounterName)
+	//{
+	//	champion.Kontras.Clear();
 
-		Bohaterowie firstCounter = new();
-		Bohaterowie secondCounter = new();
-		Bohaterowie thirdCounter = new();
+	//	Bohaterowie firstCounter = new();
+	//	Bohaterowie secondCounter = new();
+	//	Bohaterowie thirdCounter = new();
 
-		firstCounter = bohaterowieService.GetByName(firstCounterName);
-		secondCounter = bohaterowieService.GetByName(secondCounterName);
-		thirdCounter = bohaterowieService.GetByName(thirdCounterName);
+	//	firstCounter = bohaterowieService.GetByName(firstCounterName);
+	//	secondCounter = bohaterowieService.GetByName(secondCounterName);
+	//	thirdCounter = bohaterowieService.GetByName(thirdCounterName);
 
-		champion.Kontras.Add(firstCounter);
-		champion.Kontras.Add(secondCounter);
-		champion.Kontras.Add(thirdCounter);
+	//	champion.Kontras.Add(firstCounter);
+	//	champion.Kontras.Add(secondCounter);
+	//	champion.Kontras.Add(thirdCounter);
 
 
-	}
+	//}
 
 	async Task OnFileChangeIcon(InputFileChangeEventArgs e)
 	{

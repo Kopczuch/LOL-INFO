@@ -6,9 +6,10 @@ namespace ZBD.Services
 {
     public class GraczeService : IGraczeService
     {
-        private readonly MasterContext _ctx;
+        private readonly LolInfoContext _ctx;
+        ConnectionString conn = new();
 
-        public GraczeService(MasterContext ctx)
+        public GraczeService(LolInfoContext ctx)
         {
             _ctx = ctx;
         }
@@ -37,7 +38,7 @@ namespace ZBD.Services
 
         public string GetWr(string nick, char pro)
         {
-            var connection = new SqlConnection("Data Source=PC\\SQLEXPRESS;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            var connection = new SqlConnection(conn.ConnString);
             SqlCommand cmd = new SqlCommand("select dbo.win_rate(@pNick, @pro)", connection);
             cmd.Parameters.AddWithValue("@pNick", nick);
             cmd.Parameters.AddWithValue("@pro", pro);
@@ -49,7 +50,7 @@ namespace ZBD.Services
 
         public string GetAvgKda(string nick, char pro)
         {
-            var connection = new SqlConnection("Data Source=PC\\SQLEXPRESS;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            var connection = new SqlConnection(conn.ConnString);
             SqlCommand cmd = new SqlCommand("select dbo.srednie_KDA(@pNick, @pro)", connection);
             cmd.Parameters.AddWithValue("@pNick", nick);
             cmd.Parameters.AddWithValue("@pro", pro);

@@ -1,5 +1,5 @@
 ﻿@page "/przedmioty/komponenty/dodaj/{idPrzed:int}"
-@page "/przedmioty/komponenty/{id:int}"
+@page "/przedmioty/komponenty/{id:int}/edytuj"
 @using Services
 @using Models
 @inject IKomponentyPrzedmiotowService komponentyService
@@ -10,7 +10,7 @@
 <PageTitle>@Title</PageTitle>
 <h3>@Title</h3>
 
-<h3>@component.Id @component.IdPrzed @component.IdKomponentu</h3>
+@*<h3>@component.Id @component.IdPrzed @component.IdKomponentu</h3>*@
 
 <EditForm Model="component" OnValidSubmit="Save">
 	<label for="komponent">Komponent</label>
@@ -61,24 +61,29 @@
 		{
 			List<KomponentyPrzedmiotow> components = new();
 			components = komponentyService.GetAll();
-			//component.Id = components.Last().Id + 1;
+			component.IdPrzed = idPrzed;
 		}
-		component.IdPrzed = idPrzed;
-
-		items = przedmiotyService.GetAll();
+		items = przedmiotyService.GetAllAlfabetical();
 		base.OnInitialized();
 	}
 
 	private void Save()
 	{
-		int idPrzed = component.IdPrzed;
 		message = "Zaczekaj...";
-		string result = komponentyService.AddUpdate(component);
+		string result = string.Empty;
+		if(component.Id == 0)
+		{
+			result = komponentyService.Add(component);
+		}
+		else
+		{
+			result = komponentyService.UpdateRow(component.Id, component.IdKomponentu);
+		}
 		if (result == "ok")
 		{
 			message = "Pomyślnie dodano przedmiot.";
 			component = new();
-			navManager.NavigateTo($"/przedmioty/{idPrzed}");
+			navManager.NavigateTo($"/przedmioty/{idPrzed}", true);
 		}
 		else
 		{
@@ -89,6 +94,6 @@
 
 	private void Cancel(int idPrzed)
 	{
-		navManager.NavigateTo($"/przedmioty/{idPrzed}");
+		navManager.NavigateTo($"/przedmioty/{idPrzed}", true);
 	}
 }

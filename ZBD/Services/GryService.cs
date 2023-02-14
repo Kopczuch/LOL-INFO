@@ -5,9 +5,9 @@ namespace ZBD.Services
 {
 	public class GryService : IGryService
 	{
-		private readonly MasterContext _ctx;
+		private readonly LolInfoContext _ctx;
 
-		public GryService(MasterContext ctx)
+		public GryService(LolInfoContext ctx)
 		{
 			_ctx = ctx;
 		}

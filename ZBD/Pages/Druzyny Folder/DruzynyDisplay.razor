@@ -2,17 +2,18 @@
 @using Services
 @using Models
 @inject IDruzynyService druzynyService
+@inject ITurniejeService turniejeService
 @inject NavigationManager navManager
 
 <PageTitle>@id</PageTitle>
-<h3>@team.Nazwa [@team.IdDruzyny] - Drużyna @team.Liga</h3>
+<h3>@team.Nazwa [@team.IdDruzyny] - Drużyna @team.Liga <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditTeam(id))"></button></h3>
 
 <div class="image">
     <img src="@team.ZdjecieZawodnikow">
 </div>
 
 <div class="table">
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th>NICK</th>
@@ -36,9 +37,9 @@
         </table>
 </div>
 
-<strong>Turnieje</strong>
+<h5><strong>Turnieje:</strong></h5>
 <div class="table">
-    <table class="table">
+    <table class="table table-striped">
         <tr>
             <th>Nazwa</th>
             <th>Rodzaj</th>
@@ -47,12 +48,12 @@
             <th>Ostatni wynik</th>
             <th>Nagroda</th>
         </tr>
-        @foreach (var tournament in tournaments)
+        @foreach (var tournament in team.Turniejes)
         {
             <tr>
                 <td>@tournament.NazwaTurnieju</td>
                 <td>@tournament.Rodzaj</td>
-                <td>@tournament.Data</td>
+                <td>@tournament.Data.ToShortDateString()</td>
                 <td>@tournament.ZajeteMiejsce</td>
                 <td>@tournament.OstatniWynik</td>
                 <td>@tournament.Nagroda</td>
@@ -72,5 +73,10 @@
         team = druzynyService.GetById(id);
         members = druzynyService.GetMembers(id);
         base.OnInitialized();
-	}
+    }
+
+    private void ShowEditTeam(string id)
+    {
+        navManager.NavigateTo($"/druzyny/{id}/edytuj");
+    }
 }

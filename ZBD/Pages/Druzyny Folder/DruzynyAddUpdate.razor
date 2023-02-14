@@ -1,0 +1,133 @@
+﻿@page "/druzyny/dodaj"
+@page "/druzyny/{id}/edytuj"
+@using Services
+@using Models
+@inject IDruzynyService druzynyService
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navManager
+
+<PageTitle>@Title</PageTitle>
+<h3>@Title</h3>
+
+<EditForm Model="team" OnValidSubmit="Save">
+	<DataAnnotationsValidator/>
+	<ValidationSummary/>
+	@if(id == null)
+	{
+		<label id="id">ID Drużyny</label>
+		<InputText id="id" @bind-Value="team.IdDruzyny" class="form-control"></InputText>
+	}
+	<label id="name">Nazwa</label>
+	<InputText id="name" @bind-Value="team.Nazwa" class="form-control"></InputText>
+
+	<label id="desc">Opis</label>
+	<InputTextArea id="desc" @bind-Value="team.Opis" class="form-control"></InputTextArea>
+
+	<label id="league">Liga</label>
+	<InputSelect id="league" @bind-Value="team.Liga" class="form-control">
+		<option value="@string.Empty">Wybierz</option>
+		@foreach(var league in leagues)
+		{
+			<option value="@league">@league</option>
+		}
+	</InputSelect>
+
+	<label id="logo">Logo</label>
+	<InputText id="logo" @bind-Value="team.Logo" class="form-control"></InputText>
+
+	<label id="name">Zdjęcie</label>
+	<InputText @bind-Value="team.ZdjecieZawodnikow" class="form-control"></InputText>
+
+	<div class="my-2">
+		@message
+		<br />
+		@errorMessage
+	</div>
+
+	<div class="my-2">
+		<button type="submit" class="btn btn-primary">Zatwierdź</button>&nbsp;
+		@if(id != null)
+		{
+		<button type="button" class="btn btn-danger" @onclick="async ()=> await Delete(team)">Usuń</button>
+		}
+		&nbsp;<button type="button" class="btn btn-secondary" @onclick="(() => Cancel())">Anuluj</button>
+	</div>
+</EditForm>
+
+@code {
+	[Parameter]
+	public string? id { get; set; }
+	private string message = string.Empty;
+	private string errorMessage = string.Empty;
+	Druzyny team = new();
+	private string Title = "Dodaj drużynę";
+
+	private List<string> leagues = new List<string>
+	{
+		"LCK",
+		"LPL",
+		"LCS",
+		"LEC",
+		"PCS",
+		"VCS",
+		"CBLOL",
+		"LJL",
+		"LLA"
+	};
+
+	protected override void OnInitialized()
+	{
+		if (id != null)
+		{
+			Title = "Edytuj " + id;
+			team = druzynyService.GetById(id);
+		}
+		base.OnInitialized();
+	}
+
+	private void Save()
+	{
+		message = "Zaczekaj...";
+
+		string result = druzynyService.AddUpdate(team, id);
+		if (result == "okAdd")
+		{
+			message = "Pomyślnie dodano drużynę.";
+			navManager.NavigateTo("/druzyny");
+		}
+		else if (result == "okUpdate")
+		{
+			message = "Pomyślnie zaktualizowano drużynę.";
+			navManager.NavigateTo($"/druzyny/{id}");
+		}
+		else
+		{
+			message = "Nie udało się zapisać.";
+			errorMessage = result;
+		}
+	}
+
+	private async Task Delete(Druzyny team)
+	{
+		bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Czy jesteś pewien, że chcesz usunąć drużynę?");
+		if (confirmed)
+		{
+			if (druzynyService.Delete(team.IdDruzyny))
+			{
+				navManager.NavigateTo("/druzyny");
+			}
+		}
+	}
+
+	private void Cancel()
+	{
+		if(id != null)
+		{
+			navManager.NavigateTo($"/druzyny/{id}", true);
+		}
+		else
+		{
+			navManager.NavigateTo("/druzyny", true);
+		}
+	}
+}

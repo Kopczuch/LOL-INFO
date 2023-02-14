@@ -40,7 +40,7 @@ builder.Services.AddSingleton<UserAccountService>();
 
 builder.Services.AddSingleton<WeatherForecastService>();
 
-builder.Services.AddDbContext<MasterContext>(options =>
+builder.Services.AddDbContext<LolInfoContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("conn")));
 
 builder.Services.AddTransient<IBohaterowieService, BohaterowieService>();
@@ -51,6 +51,9 @@ builder.Services.AddTransient<IPrzedmiotyService, PrzedmiotyService>();
 builder.Services.AddTransient<IComponentService, ComponentService>();
 builder.Services.AddTransient<IKomponentyPrzedmiotowService, KomponentyPrzedmiotowService>();
 builder.Services.AddTransient<IDruzynyService, DruzynyService>();
+builder.Services.AddTransient<ITurniejeService, TurniejeService>();
+builder.Services.AddTransient<IGraczeZawodowiService, GraczeZawodowiService>();
+
 
 //var builder = WebAssemblyHostBuilder.CreateDefault(args);
 //builder.RootComponents.Add<App>("#app");

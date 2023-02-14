@@ -1,0 +1,54 @@
+﻿@page "/graczezawodowi"
+@using Services
+@using Models
+@inject IGraczeZawodowiService proService
+@inject NavigationManager navManager
+
+<PageTitle>Gracze Zawodowi</PageTitle>
+<h3>Lista graczy profesjonalnych <button class="btn btn-primary" @onclick="(() => ShowAddPro())">Dodaj gracza</button></h3>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>Zdjecie</th>
+			<th>Nick</th>
+			<th>Imię i nazwisko</th>
+			<th>Drużyna</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var pro in pros)
+		{
+			<tr>
+				<img src="@pro.Zdjecie" alt="@pro.Nick" />
+				<td>@pro.Nick</td>
+				<td>@pro.ImieINazwisko</td>
+				<td>@pro.IdDruzyny</td>
+				<td>
+					<button class="btn btn-primary oi oi-info" @onclick="(() => ShowPro(pro.Nick))"></button>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+@code {
+	List<GraczeZawodowi> pros = new();
+
+	protected override void OnInitialized()
+	{
+		pros = proService.GetAll();
+		base.OnInitialized();
+	}
+
+	private void ShowPro(string nick)
+	{
+		navManager.NavigateTo($"/graczezawodowi/{nick}");
+	}
+
+	private void ShowAddPro()
+	{
+		navManager.NavigateTo("/graczezawodowi/dodaj");
+	}
+}

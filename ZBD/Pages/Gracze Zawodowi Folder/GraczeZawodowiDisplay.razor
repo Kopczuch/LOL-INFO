@@ -1,0 +1,151 @@
+﻿@page "/graczezawodowi/{nick}"
+@using Services
+@using Models
+@inject IGraczeZawodowiService proService
+@inject NavigationManager navManager
+
+<PageTitle>@pro.Nick</PageTitle>
+<h3>@pro.ImieINazwisko - @pro.Nick <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditPro(nick))"></button></h3>
+
+<div class="table">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Zdjęcie</th>
+                <th>Procent wygranych</th>
+                <th>Średnie KDA</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <img src="@pro.Zdjecie">
+                </td>
+                <td><h3>@wr%</h3></td>
+                <td><h3>@avgKda</h3></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<div class="table">
+    <table class="table" title="Statystyki">
+        <tbody>
+            <tr>
+                <th>Imię i nazwisko</th>
+                <td>@pro.ImieINazwisko</td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr>
+                <th>Nick</th>
+                <td>@pro.Nick</td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr>
+                <th>Kraj pochodzenia</th>
+                <td>@pro.Kraj</td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr>
+                <th>Data urodzenia</th>
+                <td>@pro.DataUrodzin.ToShortDateString()</td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr>
+                <th>Rezydencja</th>
+                <td>@pro.Rezydencja</td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr>
+                <th>Drużyna</th>
+                <td>@pro.IdDruzyny</td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr>
+                <th>Rola</th>
+                <td>@pro.Rola</td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr>
+                <th>Ulubiona postać</th>
+                <td>@pro.UlubionyBohater</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<br />
+<h5><strong>Gry:</strong></h5>
+
+<div class="table">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id meczu</th>
+                <th>Rezultat</th>
+                <th>Zabójstwa/Śmierci/Asysty</th>
+                <th>CS</th>
+                <th>Zdobyte złoto</th>
+                <th>Czas gry</th>
+                <th>Zadane obrażenia</th>
+                <th>Strona</th>
+                <th>Bohater</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var game in pro.GryIdMeczus)
+            {
+
+                <tr>
+                    <td>@game.IdMeczu</td>
+                    <td>@game.Rezultat</td>
+                    <td>@game.Zabojstwa/@game.Smierci/@game.Asysty</td>
+                    <td>@game.CreepScore</td>
+                    <td>@game.ZdobyteZloto</td>
+                    <td>@game.CzasGry</td>
+                    <td>@game.ZadaneObrazenia</td>
+                    <td>@game.Strona</td>
+                    <td>@game.BohaterowieNazwa</td>
+                    <td>
+                        <button class="btn btn-primary oi oi-info" @onclick="(() => ShowGame(game.IdMeczu))"></button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter]
+    public string nick { get; set; }
+    GraczeZawodowi pro = new();
+    private string? wr { get; set; }
+    private string? avgKda { get; set; }
+
+    protected override void OnInitialized()
+    {
+        pro = proService.GetByNick(nick);
+        wr = proService.GetWr(nick, 'T');
+        avgKda = proService.GetAvgKda(nick, 'T');
+        base.OnInitialized();
+    }
+
+    private void ShowEditPro(string nick)
+    {
+        navManager.NavigateTo($"/graczezawodowi/{nick}/edytuj");
+    }
+
+    private void ShowGame(long id)
+    {
+        navManager.NavigateTo($"/gry/{id}");
+    }
+}

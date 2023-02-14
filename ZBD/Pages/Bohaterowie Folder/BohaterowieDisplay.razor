@@ -50,17 +50,36 @@
         <tr>
             <td>
                 <div>
-                    <label><strong>Kontry: <button class="btn btn-primary" @onclick="(() => ShowAddCounter(champion.Nazwa))"><i class="oi oi-plus"></i></button></strong></label>
-                    @foreach (var counter in champion.Kontras)
-                    {
-                        <ul>
-                            <li>
-                                @counter.Nazwa&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditCounter(champion.Nazwa, counter.Nazwa))"></button>
-                                <button class="btn btn-danger oi oi-trash" @onclick="async ()=> await DeleteCounter(champion.Nazwa, counter.Nazwa)"></button>
-                            </li>
-                        </ul>
-                    }
+                    <label><strong>Kontry:
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var counter in champion.Kontras)
+                                {
+                                    <tr>
+                                        <td>
+                                            <img src="@counter.Ikona" width="64px" height="64px"/>
+                                        </td>
+                                        <td>@counter.Nazwa</td>
+                                        <td>
+                                            <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditCounter(champion.Nazwa, counter.Nazwa))"></button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-danger oi oi-trash" @onclick="async ()=> await DeleteCounter(champion.Nazwa, counter.Nazwa)"></button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        
+                    <button class="btn btn-primary" @onclick="(() => ShowAddCounter(champion.Nazwa))">Dodaj kontrę</button></strong></label>
                 </div>
                 
             </td>
@@ -85,7 +104,7 @@
 
     void ShowEditChampion(string name)
     {
-        navManager.NavigateTo($"bohaterowie/edytuj/{name}");
+        navManager.NavigateTo($"bohaterowie/{name}/edytuj");
     }
 
     private void ShowEditCounter(string bohater, string kontra)

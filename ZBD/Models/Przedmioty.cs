@@ -22,7 +22,7 @@ public partial class Przedmioty
     [Required, Range(0, int.MaxValue, ErrorMessage = "Cena przyjmuje tylko wartości nieujemne.")]
     public short? Cena { get; set; }
 
-    [Required, Range(0, int.MaxValue, ErrorMessage = "Wartość sprzedaży przyjmuje tylko wartości nieujemne.")]
+    [Required (ErrorMessage = "Wartość sprzedaży jest wymagana."), Range(0, int.MaxValue, ErrorMessage = "Wartość sprzedaży przyjmuje tylko wartości nieujemne.")]
     public short? WartoscSprzedazy { get; set; }
 
     public virtual ICollection<GryZakupioneprzedmioty> GryZakupioneprzedmioties { get; } = new List<GryZakupioneprzedmioty>();

@@ -5,7 +5,7 @@
 @inject NavigationManager navManager
 
 <PageTitle>Drużyny</PageTitle>
-<h3>Lista drużyn</h3>
+<h3>Lista drużyn <button class="btn btn-primary" @onclick="(() => AddTeam())">Dodaj drużynę</button></h3>
 
 <table class="table">
 	<thead>
@@ -45,5 +45,10 @@
 	private void ShowTeam(string id)
 	{
 		navManager.NavigateTo($"/druzyny/{id}");
+	}
+
+	private void AddTeam()
+	{
+		navManager.NavigateTo($"/druzyny/dodaj");
 	}
 }

@@ -92,11 +92,15 @@
 	{
 		message = "Zaczekaj...";
 		string result = przedmiotyService.AddUpdate(item);
-		if(result == "ok")
+		if(result == "okAdd")
 		{
 			message = "Pomyślnie dodano przedmiot.";
-			item = new();
-			navManager.NavigateTo("/przedmioty");
+			navManager.NavigateTo("/przedmioty", true);
+		}
+		else if (result == "okUpdate")
+		{
+			message = "Pomyślnie zaktualizowano przedmiot.";
+			navManager.NavigateTo($"/przedmioty/{id}", true);
 		}
 		else
 		{
@@ -112,13 +116,21 @@
 		{
 			if (przedmiotyService.Delete(item.IdPrzed))
 			{
-				navManager.NavigateTo("/przedmioty");
+				navManager.NavigateTo("/przedmioty", true);
 			}
 		}
 	}
 
 	private void Cancel()
 	{
-		navManager.NavigateTo("/przedmioty");
+		if (id > 0)
+		{
+			navManager.NavigateTo($"/przedmioty/{id}", true);
+
+		}
+		else
+		{
+			navManager.NavigateTo("/przedmioty", true);
+		}
 	}
 }

@@ -5,23 +5,30 @@ namespace ZBD.Services
 {
 	public class PrzedmiotyService : IPrzedmiotyService
 	{
-		private readonly MasterContext _ctx;
+		private readonly LolInfoContext _ctx;
 
-		public PrzedmiotyService(MasterContext ctx)
+		public PrzedmiotyService(LolInfoContext ctx)
 		{
 			_ctx = ctx;
 		}
 
 		public string AddUpdate(Przedmioty item)
 		{
+			string res = string.Empty;
 			try
 			{
                 if (GetById(item.IdPrzed) == null)
+				{
                     _ctx.Przedmioties.Add(item);
+					res = "okAdd";
+                }
                 else
+				{
                     _ctx.Przedmioties.Update(item);
-				_ctx.SaveChanges();
-				return "ok";
+					res = "okUpdate";
+                }
+                _ctx.SaveChanges();
+				return res;
             }
 			catch(Exception ex)
 			{
@@ -55,5 +62,13 @@ namespace ZBD.Services
 		{
 			return _ctx.Przedmioties.ToList();
 		}
-	}
+
+		public List<Przedmioty> GetAllAlfabetical()
+		{
+			return _ctx.Przedmioties
+				.OrderBy(p => p.Nazwa)
+				.ToList();
+		}
+
+    }
 }

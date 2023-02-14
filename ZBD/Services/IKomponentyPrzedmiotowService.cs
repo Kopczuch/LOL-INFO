@@ -6,6 +6,8 @@ namespace ZBD.Services
 	{
         public KomponentyPrzedmiotow GetById(int id);
         public List<KomponentyPrzedmiotow> GetAll();
-        public string AddUpdate(KomponentyPrzedmiotow component);
+        public string Add(KomponentyPrzedmiotow component);
+        public string UpdateRow(long id, int idKomponentu);
+        public bool Delete(int id);
     }
 }

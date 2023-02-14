@@ -43,7 +43,7 @@
 	{
 		if (counterService.AddCounter(bohater, newCounter.nowaKontra))
 		{
-			//navManager.NavigateTo($"/bohaterowie/{bohater}");
+			navManager.NavigateTo($"/bohaterowie/{bohater}", true);
 			message = "Pomyślnie dodano!";
 		}
 		else
@@ -54,6 +54,6 @@
 
 	private void Cancel()
 	{
-		navManager.NavigateTo($"/bohaterowie/{bohater}");
+		navManager.NavigateTo($"/bohaterowie/{bohater}", true);
 	}
 }
