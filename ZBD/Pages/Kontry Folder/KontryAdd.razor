@@ -1,12 +1,12 @@
-﻿@page "/bohaterowie/kontry/{bohater}/{kontra}"
+﻿@page "/bohaterowie/kontry/{bohater}/dodaj"
 @using Services
 @using Models
 @inject ICounterService counterService
 @inject IBohaterowieService bohaterowieService
 @inject NavigationManager navManager
 
-<PageTitle>Edytuj kontrę</PageTitle>
-<h3>Edytuj kontrę dla @bohater</h3>
+<PageTitle>Dodaj kontrę</PageTitle>
+<h3>Dodaj kontrę dla @bohater</h3>
 
 <EditForm Model="newCounter" OnValidSubmit="Save">
 	<label for="kontra">Kontra</label>
@@ -28,13 +28,9 @@
 @code {
 	[Parameter]
 	public string bohater { get; set; }
-	[Parameter]
-	public string kontra { get; set; }
 
 	public string message = string.Empty;
-
 	List<Bohaterowie> champions = new();
-
 	NewCounter newCounter = new();
 
 	protected override void OnInitialized()
@@ -45,10 +41,10 @@
 
 	private void Save()
 	{
-		if(counterService.EditCounter(bohater, kontra, newCounter.nowaKontra))
+		if (counterService.AddCounter(bohater, newCounter.nowaKontra))
 		{
-			navManager.NavigateTo($"/bohaterowie/{bohater}", true);
-			message = "Pomyślnie zmieniono!";
+			//navManager.NavigateTo($"/bohaterowie/{bohater}");
+			message = "Pomyślnie dodano!";
 		}
 		else
 		{

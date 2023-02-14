@@ -49,6 +49,48 @@ namespace ZBD.Services
                 return false;
             }
 
-}
+        }
+
+        public bool AddCounter(string bohater, string kontra)
+        {
+            var connection = new SqlConnection("Data Source=PC\\SQLEXPRESS;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            SqlCommand cmd = new SqlCommand(
+                "INSERT INTO dbo.kontry(bohater, kontra) VALUES(@bohater, @kontra)", connection);
+            cmd.Parameters.AddWithValue("@bohater", bohater);
+            cmd.Parameters.AddWithValue("@kontra", kontra);
+            try
+            {
+                connection.Open();
+                cmd.ExecuteNonQuery();
+                connection.Close();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public bool Delete(string bohater, string kontra)
+        {
+            var connection = new SqlConnection("Data Source=PC\\SQLEXPRESS;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            SqlCommand cmd = new SqlCommand(
+                "DELETE FROM dbo.kontry WHERE bohater = @bohater AND kontra = @kontra", connection);
+            cmd.Parameters.AddWithValue("@bohater", bohater);
+            cmd.Parameters.AddWithValue("@kontra", kontra);
+            try
+            {
+                connection.Open();
+                cmd.ExecuteNonQuery();
+                connection.Close();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+
     }
 }

@@ -7,6 +7,6 @@ namespace ZBD.Services
         public string AddUpdate(Przedmioty item);
         public bool Delete(int id);
         public Przedmioty GetById(int id);
-        public List<Przedmioty> GetAll();
+        public List<Przedmioty> GetAll(); 
     }
 }

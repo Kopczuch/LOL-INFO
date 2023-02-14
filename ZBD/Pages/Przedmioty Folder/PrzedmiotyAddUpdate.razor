@@ -1,0 +1,124 @@
+﻿@page "/przedmioty/dodaj"
+@page "/przedmioty/{id:int}/edytuj"
+@using Services
+@using Models
+@inject IPrzedmiotyService przedmiotyService
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navManager
+
+<PageTitle>@Title</PageTitle>
+<h3>@Title</h3>
+
+<div class="row">
+
+	<div class="col-md-6">
+		<EditForm Model="@item" OnValidSubmit="Save">
+			<DataAnnotationsValidator />
+			<ValidationSummary />
+			
+			<div>
+				<label for="nazwa">Nazwa</label>
+				<InputText id="nazwa" @bind-Value="item.Nazwa" class="form-control"></InputText>
+			</div>
+
+			<div>
+				<label for="statystyki">Statystyki</label>
+				<InputText id="statystyki" @bind-Value="item.Statystyki" class="form-control"></InputText>
+			</div>
+
+			<div>
+				<label for="ikona">Ikona</label>
+				<InputText id="ikona" @bind-Value="item.Ikona" class="form-control"></InputText>
+			</div>
+
+			<div>
+				<label for="cena">Cena</label>
+				<InputNumber id="cena" @bind-Value="item.Cena" class="form-control" min=0></InputNumber>
+			</div>
+			
+			<div>
+				<label for="wartosc">Wartość sprzedaży</label>
+				<InputNumber id="wartosc" @bind-Value="item.WartoscSprzedazy" class="form-control min=0"></InputNumber>
+			</div>
+
+			<div class="my-2">
+				@message
+				<br />
+				@errorMessage
+			</div>
+
+			<div class="my-2">
+				<button type="submit" class="btn btn-primary">Zatwierdź</button>&nbsp;
+				@if (id > 0)
+				{
+					<button type="button" class="btn btn-danger" @onclick="async ()=> await Delete(item)">Usuń</button>
+				}
+				&nbsp;<button type="button" class="btn btn-secondary" @onclick="(() => Cancel())">Anuluj</button>
+			</div>
+
+
+		</EditForm>
+
+	</div>
+
+</div>
+
+
+@code {
+	[Parameter]
+	public int id { get; set; }
+	private string message = string.Empty;
+	private string errorMessage = string.Empty;
+	Przedmioty item = new();
+	private string Title = "Dodaj przedmiot";
+
+	protected override void OnInitialized()
+	{
+		if (id > 0)
+		{
+			Title = "Edytuj przedmiot";
+			item = przedmiotyService.GetById(id);
+		}
+		else
+		{
+			List<Przedmioty> items = new();
+			items = przedmiotyService.GetAll();
+			item.IdPrzed = items.Last().IdPrzed + 10;
+		}
+		base.OnInitialized();
+	}
+
+	private void Save()
+	{
+		message = "Zaczekaj...";
+		string result = przedmiotyService.AddUpdate(item);
+		if(result == "ok")
+		{
+			message = "Pomyślnie dodano przedmiot.";
+			item = new();
+			navManager.NavigateTo("/przedmioty");
+		}
+		else
+		{
+			message = "Nie udało się zapisać.";
+			errorMessage = result;
+		}
+	}
+
+	private async Task Delete(Przedmioty item)
+	{
+		bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Czy jesteś pewien, że chcesz usunąć przedmiot?");
+		if (confirmed)
+		{
+			if (przedmiotyService.Delete(item.IdPrzed))
+			{
+				navManager.NavigateTo("/przedmioty");
+			}
+		}
+	}
+
+	private void Cancel()
+	{
+		navManager.NavigateTo("/przedmioty");
+	}
+}

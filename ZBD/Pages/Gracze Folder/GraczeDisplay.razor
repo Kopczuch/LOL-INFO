@@ -5,7 +5,7 @@
 @inject IGraczeService graczeService
 @inject NavigationManager navManager
 
-<PageTitle>@player.Nick</PageTitle>
+<PageTitle>Moje Dane</PageTitle>
 <h3>@player.Nick <button class="btn btn-primary" @onclick="(() => ShowPlayer(player.Nick))"><i class="oi oi-pencil"></i></button></h3>
 
 <div class="table">
@@ -21,7 +21,7 @@
             <td>@player.Dywizja</td>
             <td>@player.Poziom</td>
             <td>@player.UlubionyBohater</td>
-            <td>@wr</td>
+            <td>@wr%</td>
             <td>@avgKda</td>
         </tr>
     </table>

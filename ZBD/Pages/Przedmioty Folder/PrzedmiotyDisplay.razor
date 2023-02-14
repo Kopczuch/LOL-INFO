@@ -2,9 +2,11 @@
 @using Services
 @using Models
 @inject IPrzedmiotyService przedmiotyService
+@inject IComponentService componentService
+@inject NavigationManager navManager
 
 <PageTitle>@item.Nazwa</PageTitle>
-<h3>@item.Nazwa</h3>
+<h3>@item.Nazwa <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditItem(item.IdPrzed))"></button></h3>
 
 <table class="table">
 	<thead>
@@ -16,21 +18,52 @@
 	<tbody>
 		<tr>
 			<td>
-				<img src="@item.Ikona"  />
+				<img src="@item.Ikona"/>
 			</td>
 			<td>@((MarkupString)@item.Statystyki)</td>
 		</tr>
 	</tbody>
 </table>
 
+
+@if(components.Count > 1)
+{
+	<h4>Komponenty:</h4>
+}
+
+@foreach (var component in components)
+{
+	if(component.Level > 0)
+	{
+		<h5><img src="@przedmiotyService.GetById(component.id_przed).Ikona"/> @przedmiotyService.GetById(component.id_przed).Nazwa</h5>
+	}
+}
+
+<br />
+<button class="btn btn-primary" @onclick="(() => ShowAddComponent(item.IdPrzed))">Dodaj komponent</button>
+<br />
+<br />
+
 @code {
 	[Parameter]
 	public int id { get; set; }
 	Przedmioty item = new();
+	List<Component> components = new();
 
 	protected override void OnInitialized()
 	{
 		item = przedmiotyService.GetById(id);
+		components = componentService.GetComponents(id);
 		base.OnInitialized();
+	}
+
+	private void ShowEditItem(int id)
+	{
+		navManager.NavigateTo($"/przedmioty/{id}/edytuj");
+	}
+
+	private void ShowAddComponent(int idPrzed)
+	{
+		navManager.NavigateTo($"/przedmioty/komponenty/dodaj/{idPrzed}");
 	}
 }

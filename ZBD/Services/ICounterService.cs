@@ -6,5 +6,7 @@ namespace ZBD.Services
     {
         public List<Counter> GetAll();
         public bool EditCounter(string bohater, string kontra, string nowaKontra);
+        public bool AddCounter(string bohater, string kontra);
+        public bool Delete(string bohater, string kontra);
     }
 }

@@ -4,7 +4,7 @@
 @using Models
 @inject IBohaterowieService bohaterowieService
 @inject IJSRuntime jsRuntime
-@inject NavigationManager navigationManager
+@inject NavigationManager navManager
 
 <PageTitle>@Title</PageTitle>
 <h3>@Title</h3>
@@ -131,11 +131,12 @@
 			</div>
 
 			<div class="my-2">
-				<button type="submit" class="btn btn-primary">Zatwierdź</button>
+				<button type="submit" class="btn btn-primary">Zatwierdź</button>&nbsp;
 				@if(name != null)
 				{
 					<button type="button" class="btn btn-danger" @onclick="async ()=> await Delete(champion)">Usuń</button>
 				}
+				&nbsp;<button type="button" class="btn btn-secondary" @onclick="(() => Cancel())">Anuluj</button>
 			</div>
 
 
@@ -155,7 +156,7 @@
 	Bohaterowie champion = new();
 	private string Title = "Dodaj bohatera";
 
-	private List<Bohaterowie> champions = new();
+	//private List<Bohaterowie> champions = new();
 
 	private string firstCounterName { get; set; }
 	private string secondCounterName { get; set; }
@@ -174,19 +175,13 @@
 	protected override void OnInitialized()
 	{
 
-		champions = bohaterowieService.GetAll();
+		//champions = bohaterowieService.GetAll();
 		if (name != null)
 		{
 			Title = "Edytuj " + name;
 			champion = bohaterowieService.GetByName(name);
 		}
-		else
-		{
-			Title = "Dodaj bohatera";
-		}
 		base.OnInitialized();
-
-
 	}
 
 	private void Save()
@@ -199,7 +194,7 @@
 		{
 			message = "Pomyślnie dodano bohatera.";
 			champion = new();
-			navigationManager.NavigateTo("/bohaterowie");
+			navManager.NavigateTo("/bohaterowie");
 		}
 		else
 		{
@@ -210,15 +205,20 @@
 
 	private async Task Delete(Bohaterowie champion)
 	{
-		bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Czy jesteś pewien?");
+		bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Czy jesteś pewien, że chcesz usunąć bohatera?");
 		if (confirmed)
 		{
 			if(bohaterowieService.Delete(champion.Nazwa))
 			{
-				champions.Remove(champion);
+				//champions.Remove(champion);
+				navManager.NavigateTo("/bohaterowie");
 			}
 		}
-		navigationManager.NavigateTo("/bohaterowie");
+	}
+
+	private void Cancel()
+	{
+		navManager.NavigateTo("/bohaterowie");
 	}
 
 	private void ChangeCounters(string name, string firstCounterName, string secondCounterName, string thirdCounterName)

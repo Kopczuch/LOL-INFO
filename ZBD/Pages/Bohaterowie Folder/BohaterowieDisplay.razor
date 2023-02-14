@@ -2,10 +2,12 @@
 @using Services
 @using Models
 @inject IBohaterowieService bohaterowieService
-@inject NavigationManager navigationManager
+@inject ICounterService counterService
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navManager
 
 <PageTitle>@name</PageTitle>
-<h3>@name - @champion.Tytuł <button class="btn btn-primary" @onclick="(() => ShowEditChampion(champion.Nazwa))"><i class="oi oi-pencil"></i></button></h3>
+<h3>@name - @champion.Tytuł <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditChampion(champion.Nazwa))"></button></h3>
 <h4>@champion.Klasa</h4>
 
 <table>
@@ -48,11 +50,15 @@
         <tr>
             <td>
                 <div>
-                    <label><strong>Kontry:</strong></label>
+                    <label><strong>Kontry: <button class="btn btn-primary" @onclick="(() => ShowAddCounter(champion.Nazwa))"><i class="oi oi-plus"></i></button></strong></label>
                     @foreach (var counter in champion.Kontras)
                     {
                         <ul>
-                            <li>@counter.Nazwa <button class="btn btn-primary" @onclick="(() => ShowEditCounter(champion.Nazwa, counter.Nazwa))"><i class="oi oi-pencil"></i></button></li>
+                            <li>
+                                @counter.Nazwa&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditCounter(champion.Nazwa, counter.Nazwa))"></button>
+                                <button class="btn btn-danger oi oi-trash" @onclick="async ()=> await DeleteCounter(champion.Nazwa, counter.Nazwa)"></button>
+                            </li>
                         </ul>
                     }
                 </div>
@@ -62,12 +68,13 @@
     </tbody>
 </table>
 
-
+<br />
+<h3>@message</h3>
 
 @code {
     [Parameter]
     public string? name { get; set; }
-
+    private string message = string.Empty;
     Bohaterowie champion = new Bohaterowie();
 
     protected override void OnInitialized()
@@ -76,27 +83,33 @@
         base.OnInitialized();
     }
 
-    //protected override void OnAfterRender(bool firstRender)
-    //{
-    //    champion = bohaterowieService.FindByName(name);
-    //    base.OnAfterRender(firstRender);
-    //}
-
-
-    //protected override void OnParametersSet()
-    //{
-    //    champion = bohaterowieService.FindByName(name);
-
-    //    base.OnParametersSet();
-		//}
-
     void ShowEditChampion(string name)
     {
-        navigationManager.NavigateTo($"bohaterowie/edytuj/{name}");
+        navManager.NavigateTo($"bohaterowie/edytuj/{name}");
     }
 
     private void ShowEditCounter(string bohater, string kontra)
     {
-        navigationManager.NavigateTo($"/bohaterowie/kontry/{bohater}/{kontra}");
+        navManager.NavigateTo($"/bohaterowie/kontry/{bohater}/{kontra}");
+    }
+
+    private void ShowAddCounter(string bohater)
+    {
+        navManager.NavigateTo($"/bohaterowie/kontry/{bohater}/dodaj");
+    }
+
+    private async Task DeleteCounter(string bohater, string kontra)
+    {
+        bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Czy jesteś pewien, że chcesz usunąć kontrę?");
+        if (confirmed)
+        {
+            if (counterService.Delete(bohater, kontra))
+            {
+                message = "Pomyślnie usunięto!";
+                navManager.NavigateTo($"/bohaterowie/{name}", true);
+            }
+            else
+                message = "Nie udało się usunąć.";
+        }
     }
 }

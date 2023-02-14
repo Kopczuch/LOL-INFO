@@ -48,6 +48,8 @@ builder.Services.AddTransient<IGraczeService, GraczeService>();
 builder.Services.AddTransient<IGryService, GryService>();
 builder.Services.AddTransient<ICounterService, CounterService>();
 builder.Services.AddTransient<IPrzedmiotyService, PrzedmiotyService>();
+builder.Services.AddTransient<IComponentService, ComponentService>();
+builder.Services.AddTransient<IKomponentyPrzedmiotowService, KomponentyPrzedmiotowService>();
 
 //var builder = WebAssemblyHostBuilder.CreateDefault(args);
 //builder.RootComponents.Add<App>("#app");

@@ -27,7 +27,6 @@ namespace ZBD.Services
 			{
 				return ex.Message;
 			}
-			
 		}
 
 		public bool Delete(int id)

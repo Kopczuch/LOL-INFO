@@ -1,0 +1,94 @@
+﻿@page "/przedmioty/komponenty/dodaj/{idPrzed:int}"
+@page "/przedmioty/komponenty/{id:int}"
+@using Services
+@using Models
+@inject IKomponentyPrzedmiotowService komponentyService
+@inject IPrzedmiotyService przedmiotyService
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navManager
+
+<PageTitle>@Title</PageTitle>
+<h3>@Title</h3>
+
+<h3>@component.Id @component.IdPrzed @component.IdKomponentu</h3>
+
+<EditForm Model="component" OnValidSubmit="Save">
+	<label for="komponent">Komponent</label>
+	<InputSelect id="komponent" @bind-Value="component.IdKomponentu" class="form-control">
+		<option value="0">Wybierz</option>
+		@foreach (var item in items)
+		{
+			<option value="@item.IdPrzed">@item.Nazwa</option>
+		}
+	</InputSelect>
+
+	<div class="my-2">
+				@message
+				<br />
+				@errorMessage
+			</div>
+
+			<div class="my-2">
+				<button type="submit" class="btn btn-primary">Zatwierdź</button>&nbsp;
+				@*@if(id != null)
+				{
+					<button type="button" class="btn btn-danger" @onclick="async ()=> await Delete(champion)">Usuń</button>
+				}*@
+				&nbsp;<button type="button" class="btn btn-secondary" @onclick="(() => Cancel(component.IdPrzed))">Anuluj</button>
+			</div>
+
+</EditForm>
+
+@code {
+	[Parameter]
+	public int id { get; set; }
+	[Parameter]
+	public int idPrzed { get; set; }
+	private string message = string.Empty;
+	private string errorMessage = string.Empty;
+	KomponentyPrzedmiotow component = new();
+	private string Title = "Dodaj komponent";
+	List<Przedmioty> items = new();
+
+	protected override void OnInitialized()
+	{
+		if (id > 0)
+		{
+			component = komponentyService.GetById(id);
+			Title = "Edytuj komponent dla " + przedmiotyService.GetById(component.IdPrzed).Nazwa;
+		}
+		else
+		{
+			List<KomponentyPrzedmiotow> components = new();
+			components = komponentyService.GetAll();
+			component.Id = components.Last().Id + 1;
+		}
+		component.IdPrzed = idPrzed;
+
+		items = przedmiotyService.GetAll();
+		base.OnInitialized();
+	}
+
+	private void Save()
+	{
+		int idPrzed = component.IdPrzed;
+		message = "Zaczekaj...";
+		string result = komponentyService.AddUpdate(component);
+		if (result == "ok")
+		{
+			message = "Pomyślnie dodano przedmiot.";
+			component = new();
+			navManager.NavigateTo($"/przedmioty/{idPrzed}");
+		}
+		else
+		{
+			message = "Nie udało się zapisać.";
+			errorMessage = result;
+		}
+	}
+
+	private void Cancel(int idPrzed)
+	{
+		navManager.NavigateTo($"/przedmioty/{idPrzed}");
+	}
+}
