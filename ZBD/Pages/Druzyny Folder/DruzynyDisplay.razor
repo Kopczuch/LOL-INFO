@@ -1,0 +1,51 @@
+﻿@page "/druzyny/{id}"
+@using Services
+@using Models
+@inject IDruzynyService druzynyService
+@inject NavigationManager navManager
+
+<PageTitle>@id</PageTitle>
+<h3>@team.Nazwa [@team.IdDruzyny] - Drużyna @team.Liga</h3>
+
+<div class="image">
+    <img src="@team.ZdjecieZawodnikow">
+</div>
+
+<div class="table">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>NICK</th>
+                <th>IMIE I NAZWISKO</th>
+                <th>KRAJ</th>
+                <th>ROLA</th>
+            </tr>
+            </thead>
+            <tbody>
+                @foreach (var member in members)
+                {
+                    <tr>
+                        <td>@member.Nick</td>
+                        <td>@member.ImieINazwisko</td>
+                        <td>@member.Kraj</td>
+                        <td>@member.Rola</td>
+                    </tr>
+                }
+                    
+            </tbody>
+        </table>
+</div>
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+    Druzyny team = new();
+    List<GraczeZawodowi> members = new();
+
+    protected override void OnInitialized()
+    {
+        team = druzynyService.GetById(id);
+        members = druzynyService.GetMembers(id);
+        base.OnInitialized();
+	}
+}

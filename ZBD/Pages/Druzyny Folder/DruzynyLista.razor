@@ -1,0 +1,49 @@
+﻿@page "/druzyny"
+@using Services
+@using Models
+@inject IDruzynyService druzynyService
+@inject NavigationManager navManager
+
+<PageTitle>Drużyny</PageTitle>
+<h3>Lista drużyn</h3>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th width="250px">Logo</th>
+			<th width="250px">Nazwa</th>
+			<th width="250px">Id</th>
+			<th>Liga</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var team in teams)
+		{
+			<tr>
+				<img src="@team.Logo" width="120px" height="120px" alt="@team.Nazwa" />
+				<td>@team.Nazwa</td>
+				<td>@team.IdDruzyny</td>
+				<td>@team.Liga</td>
+				<td>
+					<button class="btn btn-primary" @onclick="(() => ShowTeam(team.IdDruzyny))"><i class="oi oi-info"></i></button>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+@code {
+	List<Druzyny> teams = new();
+
+	protected override void OnInitialized()
+	{
+		teams = druzynyService.GetAll();
+		base.OnInitialized();
+	}
+
+	private void ShowTeam(string id)
+	{
+		navManager.NavigateTo($"/druzyny/{id}");
+	}
+}

@@ -50,6 +50,7 @@ builder.Services.AddTransient<ICounterService, CounterService>();
 builder.Services.AddTransient<IPrzedmiotyService, PrzedmiotyService>();
 builder.Services.AddTransient<IComponentService, ComponentService>();
 builder.Services.AddTransient<IKomponentyPrzedmiotowService, KomponentyPrzedmiotowService>();
+builder.Services.AddTransient<IDruzynyService, DruzynyService>();
 
 //var builder = WebAssemblyHostBuilder.CreateDefault(args);
 //builder.RootComponents.Add<App>("#app");

@@ -2,7 +2,7 @@
 @using Services;
 @using Models;
 @inject IBohaterowieService bohaterowieService
-@inject NavigationManager navigationManager
+@inject NavigationManager navManager
 
 <PageTitle>Bohaterowie</PageTitle> 
 <h3>Lista bohaterów <button class="btn btn-primary" @onclick="(() => AddChampion())">Dodaj bohatera</button></h3>
@@ -13,7 +13,7 @@
 }
 else
 {
-	@*<BlazoredTypeahead SearchMethod="@SearchChampion"
+@*	<BlazoredTypeahead SearchMethod="@SearchChampion"
 					TValue="Bohaterowie"
 				   TItem="Bohaterowie"
 					Value="selectedChampion"
@@ -63,18 +63,18 @@ else
 
 
 @code {
-	//private Models.Bohaterowie selectedChampion;
+	//private Bohaterowie selectedChampion;
 	//private void HandleSearch(Models.Bohaterowie champion)
 	//{
 	//	if (champion == null) return;
 	//	selectedChampion = champion;
-	//	NavigationManager.NavigateTo($"bohaterowie/{selectedChampion.Nazwa}");
+	//	navManager.NavigateTo($"bohaterowie/{selectedChampion.Nazwa}");
 	//}
 
-	//private async Task<IEnumerable<Models.Bohaterowie>> SearchChampion(string searchText)
+	//private async Task<IEnumerable<Bohaterowie>> SearchChampion(string searchText)
 	//{
 	//	await BohaterowieService.SearchChampion(searchText);
-	//	return BohaterowieService.Champions;
+	//	return champions;
 	//}
 
 	private List<Models.Bohaterowie> champions = new();
@@ -88,11 +88,11 @@ else
 
 	private void ShowChampion(string name)
 	{
-		navigationManager.NavigateTo($"bohaterowie/{name}");
+		navManager.NavigateTo($"bohaterowie/{name}");
 	}
 
 	private void AddChampion()
 	{
-		navigationManager.NavigateTo("bohaterowie/dodaj");
+		navManager.NavigateTo("bohaterowie/dodaj");
 	}
 }
