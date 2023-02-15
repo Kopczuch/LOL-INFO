@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using ZBD.Models;
 
 namespace ZBD.Services
@@ -6,11 +7,12 @@ namespace ZBD.Services
 	public class KomponentyPrzedmiotowService : IKomponentyPrzedmiotowService
     {
 		private readonly LolInfoContext _ctx;
-        ConnectionString conn = new();
+        private readonly IConfiguration _config;
 
-		public KomponentyPrzedmiotowService(LolInfoContext ctx)
+		public KomponentyPrzedmiotowService(LolInfoContext ctx, IConfiguration configuration)
 		{
 			_ctx = ctx;
+            _config = configuration;
 		}
 
         public string Add(KomponentyPrzedmiotow component)
@@ -29,7 +31,7 @@ namespace ZBD.Services
         
         public string UpdateRow(long id, int idKomponentu)
         {
-            var connection = new SqlConnection(conn.ConnString);
+            var connection = new SqlConnection(_config.GetConnectionString("Default"));
             SqlCommand cmd = new SqlCommand(
                 "UPDATE dbo.komponenty_przedmiotow SET id_komponentu = @idKomponentu WHERE id=@id", connection);
             cmd.Parameters.AddWithValue("@idKomponentu", idKomponentu);

@@ -22,7 +22,7 @@
 	<div>
 		<label for="ulubionybohater">Ulubiony bohater</label>
 		<InputSelect id="ulubionybohater" @bind-Value="player.UlubionyBohater" class="form-control">
-			<option value="@string.Empty">Brak</option>
+			<option value="@None">Brak</option>
 			@foreach (var champion in champions)
 			{
 				<option value="@champion.Nazwa">@champion.Nazwa</option>
@@ -38,6 +38,7 @@
 	[Parameter]
 	public string? nick { get; set; }
 	private string message = string.Empty;
+	private string None = null;
 	Gracze player = new();
 	List<Bohaterowie> champions = new();
 

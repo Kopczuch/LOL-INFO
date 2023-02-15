@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using ZBD.Models;
 
 namespace ZBD.Services
@@ -7,11 +8,12 @@ namespace ZBD.Services
 	public class GraczeZawodowiService : IGraczeZawodowiService
 	{
 		private readonly LolInfoContext _ctx;
-        ConnectionString conn = new();
+        private readonly IConfiguration _config;
 
-        public GraczeZawodowiService(LolInfoContext ctx)
+        public GraczeZawodowiService(LolInfoContext ctx, IConfiguration configuration)
 		{
 			_ctx = ctx;
+            _config = configuration;
 		}
 
         public string AddUpdate(GraczeZawodowi pro)
@@ -72,7 +74,7 @@ namespace ZBD.Services
 
         public string GetWr(string nick, char pro)
         {
-            var connection = new SqlConnection(conn.ConnString);
+            var connection = new SqlConnection(_config.GetConnectionString("Default"));
             SqlCommand cmd = new SqlCommand("select dbo.win_rate(@pNick, @pro)", connection);
             cmd.Parameters.AddWithValue("@pNick", nick);
             cmd.Parameters.AddWithValue("@pro", pro);
@@ -84,7 +86,7 @@ namespace ZBD.Services
 
         public string GetAvgKda(string nick, char pro)
         {
-            var connection = new SqlConnection(conn.ConnString);
+            var connection = new SqlConnection(_config.GetConnectionString("Default"));
             SqlCommand cmd = new SqlCommand("select dbo.srednie_KDA(@pNick, @pro)", connection);
             cmd.Parameters.AddWithValue("@pNick", nick);
             cmd.Parameters.AddWithValue("@pro", pro);

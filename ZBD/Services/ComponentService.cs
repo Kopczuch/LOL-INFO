@@ -1,14 +1,21 @@
 ﻿using Microsoft.Data.SqlClient;
 using ZBD.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace ZBD.Services
 {
     public class ComponentService : IComponentService
     {
-        ConnectionString conn = new();
+        private readonly IConfiguration _config;
+
+        public ComponentService(IConfiguration configuration)
+        {
+            _config = configuration;
+        }
+
         public List<Component> GetComponents(int id)
         {
-            var connection = new SqlConnection(conn.ConnString);
+            var connection = new SqlConnection(_config.GetConnectionString("Default"));
             SqlCommand cmd = new SqlCommand("EXEC znajdz_komponenty @id;", connection);
             cmd.Parameters.AddWithValue("@id", id);
             connection.Open();
