@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ZBD.Models;
 
-public partial class DaneLogowanium
+public partial class DaneLogowania
 {
     public string Nick { get; set; } = null!;
 

@@ -1,9 +1,9 @@
 ﻿@page "/login"
 @using ZBD.Authentication
-@using System.Net
-@using ZBD.Models
-@inject HttpClient httpClient
+@using ZBD.Models;
+@using ZBD.Services
 @inject IJSRuntime js
+@inject IDaneLogowaniaService daneLogowaniaService
 @inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navManager
 
@@ -13,37 +13,52 @@
             <h3>LOGIN</h3>
         </div>
         <div class="mb-3">
-            <label>User Name</label>
-            <input @bind="loginRequest.UserName" class="form-control" placeholder="User Name" />
+            <label>Nazwa użytkownika</label>
+            <input @bind="model.UserName" class="form-control" placeholder="Nazwa użytkownika" />
         </div>
         <div class="mb-3">
-            <label>Password</label>
-            <input @bind="loginRequest.Password" type="password" class="form-control" placeholder="Password" />
+            <label>Hasło</label>
+            <input @bind="model.Password" type="password" class="form-control" placeholder="Hasło" />
         </div>
         <div class="mb-3 d-grid gap-2">
-            <button @onclick="Authenticate" class="btn btn-primary">Login</button>
+            <button @onclick="Authenticate" class="btn btn-primary">Zaloguj</button>
+        </div>
+        <div class="mb-3 d-grid gap-2">
+            <button @onclick="Register" class="btn btn-secondary">Utwórz nowe konto</button>
         </div>
     </div>
 </div>
 
 @code {
-    private LoginRequest loginRequest = new LoginRequest();
+    private class Model
+    {
+        public string UserName { get; set; }
+        public string Password { get; set; }
+    }
+
+    private Model model = new Model();
 
     private async Task Authenticate()
     {
-        var loginResponse = await httpClient.PostAsJsonAsync<LoginRequest>("/api/Account/Login", loginRequest);
-
-        if (loginResponse.IsSuccessStatusCode)
+        DaneLogowania? userAccount = daneLogowaniaService.GetUserByName(model.UserName);
+        if (userAccount == null || userAccount.Haslo != model.Password)
         {
-            var userSession = await loginResponse.Content.ReadFromJsonAsync<UserSession>();
-            var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
-            await customAuthStateProvider.UpdateAuthenticationState(userSession);
-            navManager.NavigateTo("/gracze/" + userSession.UserName, true);
-        }
-        else if (loginResponse.StatusCode == HttpStatusCode.Unauthorized)
-        {
-            await js.InvokeVoidAsync("alert", "Invalid User Name or Password");
+            await js.InvokeVoidAsync("alert", "Podano niepoprawną nazwę użytkownika lub hasło");
             return;
         }
+
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(new UserSession
+            {
+                UserName = userAccount.Nick,
+                Role = userAccount.Rola
+            });
+        navManager.NavigateTo("/gracze/" + userAccount.Nick, true);
+
+    }
+
+    private async Task Register()
+    {
+        navManager.NavigateTo("/register");
     }
 }

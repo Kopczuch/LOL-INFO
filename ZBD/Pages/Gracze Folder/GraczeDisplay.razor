@@ -4,6 +4,7 @@
 @using Microsoft.Data.SqlClient
 @inject IGraczeService graczeService
 @inject NavigationManager navManager
+@inject IJSRuntime js
 
 <PageTitle>Moje Dane</PageTitle>
 <h3>@player.Nick <button class="btn btn-primary" @onclick="(() => ShowPlayer(player.Nick))"><i class="oi oi-pencil"></i></button></h3>

@@ -1,0 +1,46 @@
+﻿@page "/register"
+@using ZBD.Authentication
+@using ZBD.Services
+@using ZBD.Models
+@inject IDaneLogowaniaService daneLogowaniaService
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navManager
+
+<div class="row">
+    <div class="col-lg-4 offset-lg-4 pt-4 pb-4 border">
+        <div class="mb-3 text-center">
+            <h3>REGISTER</h3>
+        </div>
+        <div class="mb-3">
+            <label>Nazwa użytkownika</label>
+            <input @bind="newUser.Nick" class="form-control" placeholder="Nazwa użytkownika" />
+        </div>
+        <div class="mb-3">
+            <label>Hasło</label>
+            <input @bind="newUser.Haslo" type="password" class="form-control" placeholder="Hasło" />
+        </div>
+        <div class="mb-3 d-grid gap-2">
+            <button @onclick="CreateAccount" class="btn btn-secondary">Utwórz konto</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    public DaneLogowania newUser = new DaneLogowania();
+
+    private async Task CreateAccount()
+    {
+        newUser.Rola = "user";
+        string res = daneLogowaniaService.AddUser(newUser);
+        if (res == "okAdd")
+        {
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+            await customAuthStateProvider.UpdateAuthenticationState(new UserSession
+                {
+                    UserName = newUser.Nick,
+                    Role = newUser.Rola
+                });
+            navManager.NavigateTo("/gracze/" + newUser.Nick, true);
+        }
+    }
+}

@@ -17,7 +17,7 @@ public partial class Gracze
 
     public string? UlubionyBohater { get; set; }
 
-    public virtual DaneLogowanium? DaneLogowanium { get; set; }
+    public virtual DaneLogowania? DaneLogowania { get; set; }
 
     public virtual Bohaterowie? UlubionyBohaterNavigation { get; set; }
 

@@ -17,7 +17,7 @@ public partial class LolInfoContext : DbContext
 
     public virtual DbSet<Bohaterowie> Bohaterowies { get; set; }
 
-    public virtual DbSet<DaneLogowanium> DaneLogowania { get; set; }
+    public virtual DbSet<DaneLogowania> DaneLogowania { get; set; }
 
     public virtual DbSet<Druzyny> Druzynies { get; set; }
 
@@ -108,7 +108,7 @@ public partial class LolInfoContext : DbContext
                     });
         });
 
-        modelBuilder.Entity<DaneLogowanium>(entity =>
+        modelBuilder.Entity<DaneLogowania>(entity =>
         {
             entity.HasKey(e => e.Nick).HasName("dane_logowania_pk");
 
@@ -127,8 +127,8 @@ public partial class LolInfoContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("rola");
 
-            entity.HasOne(d => d.NickNavigation).WithOne(p => p.DaneLogowanium)
-                .HasForeignKey<DaneLogowanium>(d => d.Nick)
+            entity.HasOne(d => d.NickNavigation).WithOne(p => p.DaneLogowania)
+                .HasForeignKey<DaneLogowania>(d => d.Nick)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("dane_logowania_gracze_fk");
         });
