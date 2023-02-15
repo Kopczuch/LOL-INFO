@@ -55,7 +55,6 @@
 		if (graczeService.Update(player))
 		{
 			message = "Pomyślnie zaktualizowano Twoje dane.";
-			//player = new();
 			navManager.NavigateTo($"/gracze/{nick}");
 		}
 		else
