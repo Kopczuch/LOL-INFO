@@ -12,23 +12,30 @@ namespace ZBD.Services
             _ctx = ctx;
         }
 
-        public string AddUpdate(Turnieje tournament, string id)
+        public string AddUpdate(Turnieje tournament, string name)
         {
+            string res = string.Empty;
             try
             {
-                if (id == null)
+                if (name == null)
+                {
                     _ctx.Turniejes.Add(tournament);
+                    res = "okAdd";
+                }
                 else
+                {
                     _ctx.Turniejes.Update(tournament);
+                    res = "okUpdate";
+                }
                 _ctx.SaveChanges();
-                return "ok";
+                return res;
             }
             catch (Exception ex)
             {
-                if (ex.Message == "The instance of entity type 'Turnieje' cannot be tracked because another instance with the same key value for {'NazwaTurnieju'} is already being tracked. When attaching existing entities, ensure that only one entity instance with a given key value is attached. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see the conflicting key values.")
-                    return "Podana nazwa turnieju jest już zajęta.";
-                else
-                    return ex.Message;
+                //if (ex.Message == "The instance of entity type 'Turnieje' cannot be tracked because another instance with the same key value for {'NazwaTurnieju'} is already being tracked. When attaching existing entities, ensure that only one entity instance with a given key value is attached. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see the conflicting key values.")
+                //    return "Podana nazwa turnieju jest już zajęta.";
+                //else
+                return ex.Message;
             }
         }
 

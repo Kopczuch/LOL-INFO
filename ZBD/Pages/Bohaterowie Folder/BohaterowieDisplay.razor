@@ -13,9 +13,13 @@
 <table>
     <tbody>
         <tr>
-            <td rowspan="3" colspan="1">
+            <td rowspan="3" colspan="1" valign="top">
                 <div class="image">
                     <img src="@champion.Obraz">
+                    <br />
+                    <br />
+                    <button class="btn btn-primary" @onclick="(() => ShowAddCounter(champion.Nazwa))">Dodaj kontrę</button>
+
                 </div>
             </td>
             <div>
@@ -44,13 +48,14 @@
                         </tbody>
                     </table>
                 </div>
-                
             </td>
         </tr>
         <tr>
             <td>
                 <div>
-                    <label><strong>Kontry:
+                    @if(champion.Kontras.Count() > 0)
+                    {
+                        <label><strong>Kontry:</strong></label>
                         <table class="table">
                             <thead>
                                 <tr>
@@ -65,7 +70,7 @@
                                 {
                                     <tr>
                                         <td>
-                                            <img src="@counter.Ikona" width="64px" height="64px"/>
+                                            <img src="@counter.Ikona" width="64px" height="64px" />
                                         </td>
                                         <td>@counter.Nazwa</td>
                                         <td>
@@ -78,16 +83,17 @@
                                 }
                             </tbody>
                         </table>
-                        
-                    <button class="btn btn-primary" @onclick="(() => ShowAddCounter(champion.Nazwa))">Dodaj kontrę</button></strong></label>
+                    }
                 </div>
                 
             </td>
         </tr>
     </tbody>
 </table>
+<br />
 
 <br />
+
 <h3>@message</h3>
 
 @code {

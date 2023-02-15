@@ -1,5 +1,47 @@
-﻿<h3>TurniejeLista</h3>
+﻿@page "/turnieje"
+@using Services
+@using Models
+@inject ITurniejeService turniejeService
+
+<PageTitle>Turnieje</PageTitle>
+<h3>Turnieje</h3>
+
+<div class="table">
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<td>Nazwa</td>
+				<td>Rodzaj</td>
+				<td>Data</td>
+				<td>Zajęte miejsce</td>
+				<td>Ostatni wynik</td>
+				<td>Nagroda</td>
+				<td>ID Drużyny</td>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach(var tournament in tournaments)
+			{
+				<tr>
+					<td>@tournament.NazwaTurnieju</td>
+					<td>@tournament.Rodzaj</td>
+					<td>@tournament.Data.ToShortDateString()</td>
+					<td>@tournament.ZajeteMiejsce</td>
+					<td>@tournament.OstatniWynik</td>
+					<td>@tournament.Nagroda</td>
+					<td>@tournament.IdDruzyny</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>
 
 @code {
+	private List<Turnieje> tournaments = new();
 
+	protected override void OnInitialized()
+	{
+		tournaments = turniejeService.GetAll();
+		base.OnInitialized();
+	}
 }

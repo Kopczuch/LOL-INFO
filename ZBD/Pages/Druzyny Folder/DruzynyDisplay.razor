@@ -37,30 +37,52 @@
         </table>
 </div>
 
-<h5><strong>Turnieje:</strong></h5>
-<div class="table">
-    <table class="table table-striped">
-        <tr>
-            <th>Nazwa</th>
-            <th>Rodzaj</th>
-            <th>Data</th>
-            <th>Zajęte miejsce</th>
-            <th>Ostatni wynik</th>
-            <th>Nagroda</th>
-        </tr>
-        @foreach (var tournament in team.Turniejes)
-        {
-            <tr>
-                <td>@tournament.NazwaTurnieju</td>
-                <td>@tournament.Rodzaj</td>
-                <td>@tournament.Data.ToShortDateString()</td>
-                <td>@tournament.ZajeteMiejsce</td>
-                <td>@tournament.OstatniWynik</td>
-                <td>@tournament.Nagroda</td>
-            </tr>
-        }
-    </table>
-</div>
+<button class="btn btn-primary" @onclick="(() => ShowAddTournament(team.IdDruzyny))">Dodaj turniej</button>
+<br />
+<br />
+
+@if (team.Turniejes.Count() > 0)
+{
+    <h5><strong>Turnieje:</strong></h5>
+    <div class="table">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nazwa</th>
+                    <th>Rodzaj</th>
+                    <th>Data</th>
+                    <th>Zajęte miejsce</th>
+                    <th>Ostatni wynik</th>
+                    <th>Nagroda</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tournament in team.Turniejes)
+                {
+                    <tr>
+                        <td>@tournament.NazwaTurnieju</td>
+                        <td>@tournament.Rodzaj</td>
+                        <td>@tournament.Data.ToShortDateString()</td>
+                        <td>@tournament.ZajeteMiejsce</td>
+                        <td>@tournament.OstatniWynik</td>
+                        @if (tournament.Nagroda == null)
+                        {
+                            <td>@tournament.Nagroda</td>
+                        }
+                        else
+                        {
+                            <td>@Math.Round((decimal)tournament.Nagroda, 2)</td>
+                        }
+                        <td>
+                            <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditTournament(tournament.NazwaTurnieju, team.IdDruzyny))"></button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
 
 @code {
     [Parameter]
@@ -78,5 +100,15 @@
     private void ShowEditTeam(string id)
     {
         navManager.NavigateTo($"/druzyny/{id}/edytuj");
+    }
+
+    private void ShowAddTournament(string id)
+    {
+        navManager.NavigateTo($"/turnieje/dodaj/{id}");
+    }
+
+    private void ShowEditTournament(string name, string id)
+    {
+        navManager.NavigateTo($"/turnieje/{name}/{id}/edytuj");
     }
 }

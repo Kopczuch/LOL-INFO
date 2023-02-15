@@ -1,0 +1,117 @@
+﻿@page "/turnieje/dodaj/{id}"
+@page "/turnieje/{name}/{id}/edytuj"
+@using Services
+@using Models
+@inject ITurniejeService turniejeService
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navManager
+
+<PageTitle>@Title</PageTitle>
+<h3>@Title</h3>
+
+<EditForm Model="tournament" OnValidSubmit="Save">
+
+	@if(name == null)
+	{
+		<label id="name">Nazwa</label>
+		<InputText id="name" class="form-control" @bind-Value="tournament.NazwaTurnieju"/>
+	}
+
+	<label id="type">Rodzaj</label>
+	<InputSelect id="type" @bind-Value="tournament.Rodzaj" class="form-control">
+		<option value="@string.Empty">Wybierz</option>
+		@foreach (var type in types)
+		{
+			<option value="@type">@type</option>
+		}
+	</InputSelect>
+
+	<label id="date">Data</label>
+	<InputDate id="date" class="form-control" @bind-Value="tournament.Data" />
+
+	<label id="place">Zajęte miejsce</label>
+	<InputNumber id="place" class="form-control" @bind-Value="tournament.ZajeteMiejsce" min=0/>
+
+	<label id="lastRes">Ostatni wynik</label>
+	<InputText id="lastRes" class="form-control" @bind-Value="tournament.OstatniWynik" />
+
+	<label id="prize">Nagroda</label>
+	<InputNumber id="prize" class="form-control" @bind-Value="tournament.Nagroda" />
+
+	<div class="my-2">
+		<button type="submit" class="btn btn-primary">Zatwierdź</button>&nbsp;
+		@if (name != null)
+		{
+			<button type="button" class="btn btn-danger" @onclick="async ()=> await Delete(tournament)">Usuń</button>
+		}
+		&nbsp;<button type="button" class="btn btn-secondary" @onclick="(() => Cancel())">Anuluj</button>
+	</div>
+
+</EditForm>
+
+@code {
+	[Parameter]
+	public string? name { get; set; }
+	[Parameter]
+	public string id { get; set; }
+	private string message = string.Empty;
+	private string errorMessage = string.Empty;
+	private string Title = "Dodaj turniej";
+	Turnieje tournament = new();
+
+	private List<string> types = new List<string>
+	{
+		"OFFLINE",
+		"ONLINE"
+	};
+
+	protected override void OnInitialized()
+	{
+		if (name != null)
+		{
+			Title = "Edytuj " + name + " [" + id + "]"; 
+			tournament = turniejeService.GetByName(name);
+		}
+		tournament.IdDruzyny = id;
+		base.OnInitialized();
+	}
+
+	private void Save()
+	{
+		message = "Zaczekaj...";
+
+		string result = turniejeService.AddUpdate(tournament, name);
+		if (result == "okAdd")
+		{
+			message = "Pomyślnie dodano turniej.";
+			navManager.NavigateTo($"/druzyny/{id}", true);
+		}
+		else if (result == "okUpdate")
+		{
+			message = "Pomyślnie zaktualizowano turniej.";
+			navManager.NavigateTo($"/druzyny/{id}", true);
+		}
+		else
+		{
+			message = "Nie udało się zapisać.";
+			errorMessage = result;
+		}
+	}
+
+	private async Task Delete(Turnieje tournament)
+	{
+		bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Czy jesteś pewien, że chcesz usunąć turniej?");
+		if (confirmed)
+		{
+			if (turniejeService.Delete(tournament.NazwaTurnieju))
+			{
+				navManager.NavigateTo($"/druzyny/{id}", true);
+			}
+		}
+	}
+
+	private void Cancel()
+	{
+		navManager.NavigateTo($"/druzyny/{id}", true);
+	}
+}
