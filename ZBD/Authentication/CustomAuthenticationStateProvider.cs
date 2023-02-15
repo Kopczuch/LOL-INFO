@@ -1,17 +1,17 @@
 ﻿using Blazored.SessionStorage;
-using ZBD.Extensions;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 using ZBD.Models;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace ZBD.Authentication
 {
     public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
-        private readonly ISessionStorageService _sessionStorage;
+        private readonly ProtectedSessionStorage _sessionStorage;
         private ClaimsPrincipal _anonymous = new ClaimsPrincipal(new ClaimsIdentity());
 
-        public CustomAuthenticationStateProvider(ISessionStorageService sessionStorage)
+        public CustomAuthenticationStateProvider(ProtectedSessionStorage sessionStorage)
         {
             _sessionStorage = sessionStorage;
         }
@@ -20,16 +20,18 @@ namespace ZBD.Authentication
         {
             try
             {
-                var userSession = await _sessionStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
+                var userSessionStorageResult = await _sessionStorage.GetAsync<UserSession>("UserSession");
+                var userSession = userSessionStorageResult.Success ? userSessionStorageResult.Value : null;
                 if (userSession == null)
                     return await Task.FromResult(new AuthenticationState(_anonymous));
                 var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, userSession.UserName),
                     new Claim(ClaimTypes.Role, userSession.Role)
-                }, "JwtAuth"));
+                }, "CustomAuth"));
 
                 return await Task.FromResult(new AuthenticationState(claimsPrincipal));
+
             }
             catch
             {
@@ -37,42 +39,26 @@ namespace ZBD.Authentication
             }
         }
 
-        public async Task UpdateAuthenticationState(UserSession? userSession)
+        public async Task UpdateAuthenticationState(UserSession userSession)
         {
             ClaimsPrincipal claimsPrincipal;
 
             if (userSession != null)
             {
+                await _sessionStorage.SetAsync("UserSession", userSession);
                 claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, userSession.UserName),
                     new Claim(ClaimTypes.Role, userSession.Role)
                 }));
-                userSession.ExpiryTimeStamp = DateTime.Now.AddSeconds(userSession.ExpiresIn);
-                await _sessionStorage.SaveItemEncryptedAsync("UserSession", userSession);
             }
             else
             {
+                await _sessionStorage.DeleteAsync("UserSession");
                 claimsPrincipal = _anonymous;
-                await _sessionStorage.RemoveItemAsync("UserSession");
             }
 
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
-        }
-
-        public async Task<string> GetToken()
-        {
-            var result = string.Empty;
-
-            try
-            {
-                var userSession = await _sessionStorage.ReadEncryptedItemAsync<UserSession>("UserSession");
-                if (userSession != null && DateTime.Now < userSession.ExpiryTimeStamp)
-                    result = userSession.Token;
-            }
-            catch { }
-
-            return result;
         }
     }
 }
