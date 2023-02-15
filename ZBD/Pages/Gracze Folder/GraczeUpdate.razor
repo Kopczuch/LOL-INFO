@@ -10,15 +10,14 @@
 
 <EditForm Model="player" OnValidSubmit="Save">
 	<DataAnnotationsValidator />
+	<ValidationSummary />
 	<div>
 		<label for="dywizja">Dywizja</label>
 		<InputText id="dywizja" @bind-Value="player.Dywizja" class="form-control"></InputText>
-		<ValidationMessage For="@(() => player.Dywizja)" />
 	</div>
 	<div>
 		<label for="poziom">Poziom</label>
 		<InputNumber id="poziom" @bind-Value="player.Poziom" class="form-control" min=1></InputNumber>
-		<ValidationMessage For="@(() => player.Poziom)" />
 	</div>
 	<div>
 		<label for="ulubionybohater">Ulubiony bohater</label>
