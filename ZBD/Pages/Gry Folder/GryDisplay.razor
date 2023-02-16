@@ -9,8 +9,12 @@
 
 <PageTitle>Szczegóły gry</PageTitle>
 <h3>
-    Szczegóły gry
-    <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditGame(id))"></button>
+    Szczegóły gry 
+    <AuthorizeView Roles="Administrator">
+    <Authorized>
+        <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditGame(id))"></button>
+    </Authorized>
+</AuthorizeView>
 </h3>
 
 <div class="table">
@@ -69,7 +73,13 @@
             <tr>
                 <td><strong>Bohater: </strong><a href="/bohaterowie/@game.BohaterowieNazwa">@game.BohaterowieNazwa</a></td>
                 <th>Zakupione przedmioty</th>
-                <th><button type="button" class="btn btn-primary" @onclick="(() => ShowAddBoughItem(game.IdMeczu))">Dodaj przedmiot</button></th>
+                <th>
+                    <AuthorizeView Roles="Administrator">
+                        <Authorized>
+                            <button type="button" class="btn btn-primary" @onclick="(() => ShowAddBoughItem(game.IdMeczu))">Dodaj przedmiot</button>
+                        </Authorized>
+                    </AuthorizeView>
+                </th>
                 <th></th>
             </tr>
         </thead>
@@ -98,10 +108,20 @@
                             <a href="/przedmioty/@boughtItem.id_przed">@boughtItem.nazwa</a>
                         </td>
                         <td>
-                            <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditBoughtItem(game.IdMeczu, boughtItem.id_przed))"></button>
+                            <AuthorizeView Roles="Administrator">
+                                <Authorized>
+                                    <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditBoughtItem(game.IdMeczu, boughtItem.id_przed))"></button>
+                                </Authorized>
+                            </AuthorizeView>
+                            
                         </td>
                         <td>
-                            <button class="btn btn-danger oi oi-trash" @onclick="(() => DeleteBoughtItem(game.IdMeczu, boughtItem.id_przed))"></button>
+                            <AuthorizeView Roles="Administrator">
+                                <Authorized>
+                                    <button class="btn btn-danger oi oi-trash" @onclick="(() => DeleteBoughtItem(game.IdMeczu, boughtItem.id_przed))"></button>
+                                </Authorized>
+                            </AuthorizeView>
+                            
                         </td>
                     </tr> 
                 }

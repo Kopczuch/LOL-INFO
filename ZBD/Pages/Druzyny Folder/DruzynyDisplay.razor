@@ -3,10 +3,18 @@
 @using Models
 @inject IDruzynyService druzynyService
 @inject ITurniejeService turniejeService
+@inject IJSRuntime jsRuntime
 @inject NavigationManager navManager
 
 <PageTitle>@id</PageTitle>
-<h3>@team.Nazwa [@team.IdDruzyny] - Drużyna @team.Liga <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditTeam(id))"></button></h3>
+<h3>
+    @team.Nazwa [@team.IdDruzyny] - Drużyna @team.Liga 
+    <AuthorizeView Roles="Administrator">
+		<Authorized>
+			<button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditTeam(id))"></button>
+        </Authorized>
+    </AuthorizeView>
+</h3>
 
 <div class="image">
     <img src="@team.ZdjecieZawodnikow">
@@ -36,8 +44,11 @@
             </tbody>
         </table>
 </div>
-
-<button class="btn btn-primary" @onclick="(() => ShowAddTournament(team.IdDruzyny))">Dodaj turniej</button>
+<AuthorizeView Roles="Administrator">
+    <Authorized>
+        <button class="btn btn-primary" @onclick="(() => ShowAddTournament(team.IdDruzyny))">Dodaj turniej</button>
+    </Authorized>
+</AuthorizeView>
 <br />
 <br />
 
@@ -54,6 +65,7 @@
                     <th>Zajęte miejsce</th>
                     <th>Ostatni wynik</th>
                     <th>Nagroda</th>
+                    <th></th>
                     <th></th>
                 </tr>
             </thead>
@@ -75,7 +87,19 @@
                             <td>@Math.Round((decimal)tournament.Nagroda, 2)</td>
                         }
                         <td>
-                            <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditTournament(tournament.NazwaTurnieju, team.IdDruzyny))"></button>
+                            <AuthorizeView Roles="Administrator">
+                                <Authorized>
+                                    <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditTournament(tournament.NazwaTurnieju, team.IdDruzyny))"></button>
+                                </Authorized>
+                            </AuthorizeView>
+                            
+                        </td>
+                        <td>
+                            <AuthorizeView Roles="Administrator">
+                                <Authorized>
+                                    <button class="btn btn-danger oi oi-trash" @onclick="(() => DeleteTournament(tournament.NazwaTurnieju))"></button>
+                                </Authorized>
+                            </AuthorizeView>
                         </td>
                     </tr>
                 }
@@ -84,11 +108,14 @@
     </div>
 }
 
+@*<h3>@message</h3>*@
+
 @code {
     [Parameter]
     public string id { get; set; }
     Druzyny team = new();
     List<GraczeZawodowi> members = new();
+    private string message = string.Empty;
 
     protected override void OnInitialized()
     {
@@ -110,5 +137,22 @@
     private void ShowEditTournament(string name, string id)
     {
         navManager.NavigateTo($"/turnieje/{name}/{id}/edytuj");
+    }
+
+    private async Task DeleteTournament(string name)
+    {
+        bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Czy jesteś pewien, że chcesz usunąć turniej?");
+        if (confirmed)
+        {
+            if (turniejeService.Delete(name))
+            {
+                message = "Pomyślnie usunięto!";
+                navManager.NavigateTo($"/druzyny/{id}", true);
+            }
+            else
+            {
+                message = "Nie udało się usunąć.";
+            }
+        }
     }
 }

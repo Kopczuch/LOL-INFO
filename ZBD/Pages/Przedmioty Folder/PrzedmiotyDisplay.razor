@@ -8,7 +8,14 @@
 @inject NavigationManager navManager
 
 <PageTitle>@item.Nazwa</PageTitle>
-<h3>@item.Nazwa <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditItem(id))"></button></h3>
+<h3>
+	@item.Nazwa 
+	<AuthorizeView Roles="Administrator">
+		<Authorized>
+			<button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditItem(id))"></button>
+		</Authorized>
+	</AuthorizeView>
+</h3>
 
 <table class="table">
 	<thead>
@@ -52,10 +59,19 @@
 							<a href="#" @onclick="(() =>ShowItem(component.id_przed))">@przedmiotyService.GetById(component.id_przed).Nazwa</a>
 						</td>
 						<td>
-							<button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditComponent(component.id))"></button>
+							<AuthorizeView Roles="Administrator">
+								<Authorized>
+									<button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditComponent(component.id))"></button>
+								</Authorized>
+							</AuthorizeView>
+							
 						</td>
 						<td>
-							<button class="btn btn-danger oi oi-trash" @onclick="async ()=> await DeleteComponent(component.id)"></button>
+							<AuthorizeView Roles="Administrator">
+								<Authorized>
+									<button class="btn btn-danger oi oi-trash" @onclick="async ()=> await DeleteComponent(component.id)"></button>
+								</Authorized>
+							</AuthorizeView>
 						</td>
 					</tr>
 				}
@@ -66,7 +82,12 @@
 
 
 <br />
-<button class="btn btn-primary" @onclick="(() => ShowAddComponent(item.IdPrzed))">Dodaj komponent</button>
+<AuthorizeView Roles="Administrator">
+	<Authorized>
+		<button class="btn btn-primary" @onclick="(() => ShowAddComponent(item.IdPrzed))">Dodaj komponent</button>
+	</Authorized>
+</AuthorizeView>
+
 <br />
 <h3>@message</h3>
 <br />

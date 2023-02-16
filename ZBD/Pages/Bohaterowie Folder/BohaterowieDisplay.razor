@@ -7,7 +7,15 @@
 @inject NavigationManager navManager
 
 <PageTitle>@name</PageTitle>
-<h3>@name - @champion.Tytuł <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditChampion(champion.Nazwa))"></button></h3>
+<h3>
+    @name - @champion.Tytuł 
+    <AuthorizeView Roles="Administrator">
+        <Authorized>
+            <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditChampion(champion.Nazwa))"></button>
+        </Authorized>
+    </AuthorizeView>
+</h3>
+
 <h4>@champion.Klasa</h4>
 
 <table>
@@ -18,8 +26,11 @@
                     <img src="@champion.Obraz">
                     <br />
                     <br />
-                    <button class="btn btn-primary" @onclick="(() => ShowAddCounter(champion.Nazwa))">Dodaj kontrę</button>
-
+                    <AuthorizeView Roles="Administrator">
+                        <Authorized>
+                            <button class="btn btn-primary" @onclick="(() => ShowAddCounter(champion.Nazwa))">Dodaj kontrę</button>
+                        </Authorized>
+                    </AuthorizeView>
                 </div>
             </td>
             <div>
@@ -75,10 +86,19 @@
                                             </td>
                                             <td><a href="#" @onclick="(() => GoToCounter(counter.Nazwa))">@counter.Nazwa</a></td>
                                             <td>
-                                                <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditCounter(champion.Nazwa, counter.Nazwa))"></button>
+                                                <AuthorizeView Roles="Administrator">
+                                                    <Authorized>
+                                                        <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditCounter(champion.Nazwa, counter.Nazwa))"></button>
+                                                    </Authorized>
+                                                </AuthorizeView>
                                             </td>
                                             <td>
-                                                <button class="btn btn-danger oi oi-trash" @onclick="async ()=> await DeleteCounter(champion.Nazwa, counter.Nazwa)"></button>
+                                                <AuthorizeView Roles="Administrator">
+                                                    <Authorized>
+                                                        <button class="btn btn-danger oi oi-trash" @onclick="async ()=> await DeleteCounter(champion.Nazwa, counter.Nazwa)"></button>
+                                                    </Authorized>
+                                                </AuthorizeView>
+                                                
                                             </td>
                                         </tr>
                                     }

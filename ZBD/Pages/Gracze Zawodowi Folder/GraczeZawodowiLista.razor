@@ -5,7 +5,14 @@
 @inject NavigationManager navManager
 
 <PageTitle>Gracze Zawodowi</PageTitle>
-<h3>Lista graczy profesjonalnych <button class="btn btn-primary" @onclick="(() => ShowAddPro())">Dodaj gracza</button></h3>
+<h3>
+	Lista graczy profesjonalnych 
+	<AuthorizeView Roles="Administrator">
+		<Authorized>
+			<button class="btn btn-primary" @onclick="(() => ShowAddPro())">Dodaj gracza</button>
+		</Authorized>
+	</AuthorizeView>
+</h3>
 
 <table class="table">
 	<thead>

@@ -6,7 +6,15 @@
 @inject NavigationManager navManager
 
 <PageTitle>@pro.Nick</PageTitle>
-<h3>@pro.ImieINazwisko - @pro.Nick <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditPro(nick))"></button></h3>
+<h3>
+    @pro.ImieINazwisko - @pro.Nick 
+    <AuthorizeView Roles="Administrator">
+        <Authorized>
+            <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditPro(nick))"></button>
+        </Authorized>
+    </AuthorizeView>
+    
+</h3>
 
 
 <div class="table" >
@@ -43,7 +51,7 @@
                             </tr>
                             <tr>
                                 <td><strong>Drużyna</strong></td>
-                                <td>@pro.IdDruzyny</td>
+                                <td><a href="/druzyny/@pro.IdDruzyny">@pro.IdDruzyny</a></td>
                             </tr>
                             <tr>
                                 <td><strong>Rola</strong></td>
@@ -71,7 +79,12 @@
 </div>
 
 <br />
-<button class="btn btn-primary" @onclick="(() => ShowAddGame())">Dodaj grę</button>
+<AuthorizeView Roles="Administrator">
+    <Authorized>
+        <button class="btn btn-primary" @onclick="(() => ShowAddGame())">Dodaj grę</button>
+    </Authorized>
+</AuthorizeView>
+
 <br />
 <br />
 

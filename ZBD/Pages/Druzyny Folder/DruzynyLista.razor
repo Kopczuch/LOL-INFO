@@ -5,7 +5,14 @@
 @inject NavigationManager navManager
 
 <PageTitle>Drużyny</PageTitle>
-<h3>Lista drużyn <button class="btn btn-primary" @onclick="(() => AddTeam())">Dodaj drużynę</button></h3>
+<h3>
+	Lista drużyn 
+	<AuthorizeView Roles="Administrator">
+		<Authorized>
+			<button class="btn btn-primary" @onclick="(() => AddTeam())">Dodaj drużynę</button>
+		</Authorized>
+	</AuthorizeView>
+</h3>
 
 <table class="table">
 	<thead>
