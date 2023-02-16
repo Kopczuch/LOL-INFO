@@ -59,7 +59,7 @@ namespace ZBD.Services
         public string Update(long gameId, int itemId, int newItemId)
         {
             var connection = new SqlConnection(_config.GetConnectionString("Default"));
-            SqlCommand cmd = new SqlCommand("UPDATE dbo.gry_zakupioneprzedmioty SET id_zakupionego_przedmiotu = @newItemId WHERE id = @gameId AND id_zakupionego_przedmiotu = @itemId;", connection);
+            SqlCommand cmd = new SqlCommand("UPDATE dbo.gry_zakupioneprzedmioty SET id_zakupionego_przedmiotu = @newItemId WHERE id_meczu = @gameId AND id_zakupionego_przedmiotu = @itemId;", connection);
             cmd.Parameters.AddWithValue("@gameId", gameId);
             cmd.Parameters.AddWithValue("@itemId", itemId);
             cmd.Parameters.AddWithValue("@newItemId", newItemId);
@@ -80,7 +80,7 @@ namespace ZBD.Services
         public string Delete(long gameId, int itemId)
         {
             var connection = new SqlConnection(_config.GetConnectionString("Default"));
-            SqlCommand cmd = new SqlCommand("DELETE dbo.gry_zakupioneprzedmioty WHERE id = @gameId AND id_zakupionego_przedmiotu = @itemId;", connection);
+            SqlCommand cmd = new SqlCommand("DELETE dbo.gry_zakupioneprzedmioty WHERE id_meczu = @gameId AND id_zakupionego_przedmiotu = @itemId;", connection);
             cmd.Parameters.AddWithValue("@gameId", gameId);
             cmd.Parameters.AddWithValue("@itemId", itemId);
             try

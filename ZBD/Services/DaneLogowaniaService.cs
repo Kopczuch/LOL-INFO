@@ -29,7 +29,7 @@ namespace ZBD.Services
             }
             catch (Exception ex)
             {
-                 return "Błąd przy dodawaniu użytkownika";
+                 return "Błąd przy dodawaniu użytkownika.";
             }
 
         }

@@ -9,11 +9,12 @@
 @inject IBohaterowieService bohaterowieService
 @inject IJSRuntime jsRuntime
 @inject NavigationManager navManager
+@using System.ComponentModel.DataAnnotations;
 
 <PageTitle>@Title</PageTitle>
 <h3>@Title</h3>
 
-<EditForm Model="game" OnValidSubmit="Save">
+<EditForm Model="game"  OnValidSubmit="Save">
 	<DataAnnotationsValidator />
 	<ValidationSummary />
 
@@ -46,15 +47,15 @@
 				<tr>
 					<td>
 						<label>Godziny</label>
-						<InputNumber id="time" @bind-Value="hours" class="form-control" min=0></InputNumber>
+						<InputNumber id="time" @bind-Value="time.hours" class="form-control" min=0 max=2></InputNumber>
 					</td>
 					<td>
 						<label>Minuty</label>
-						<InputNumber id="time" @bind-Value="minutes" class="form-control" min=0></InputNumber>
+						<InputNumber id="time" @bind-Value="time.minutes" class="form-control" min=0 max=59></InputNumber>
 					</td>
 					<td>
 						<label>Sekundy</label>
-						<InputNumber id="time" @bind-Value="seconds" class="form-control" min=0></InputNumber>
+						<InputNumber id="time" @bind-Value="time.seconds" class="form-control" min=0 max=59></InputNumber>
 					</td>
 				</tr>
 			</tbody>
@@ -113,10 +114,6 @@
 	[Parameter]
 	public string nick { get; set; }
 
-	private int hours;
-	private int minutes;
-	private int seconds;
-
 	private string message = string.Empty;
 	private string errorMessage = string.Empty;
 	private string Title = "Dodaj grę";
@@ -124,6 +121,7 @@
 	List<Bohaterowie> champions = new List<Bohaterowie>();
 	Gry game = new();
 	TimeSpan gameTime;
+	GameTime time = new();
 
 	protected override void OnInitialized()
 	{
@@ -138,7 +136,7 @@
 
 	private void Save()
 	{
-		gameTime = new TimeSpan(hours, minutes, seconds);
+		gameTime = new TimeSpan(time.hours, time.hours, time.hours);
 		game.CzasGry = gameTime;
 		message = "Zaczekaj...";
 		string result = string.Empty;

@@ -69,7 +69,7 @@
             <tr>
                 <td><strong>Bohater: </strong><a href="/bohaterowie/@game.BohaterowieNazwa">@game.BohaterowieNazwa</a></td>
                 <th>Zakupione przedmioty</th>
-                <th></th>
+                <th><button type="button" class="btn btn-primary" @onclick="(() => ShowAddBoughItem(game.IdMeczu))">Dodaj przedmiot</button></th>
                 <th></th>
             </tr>
         </thead>
@@ -109,6 +109,12 @@
     </table>
 </div>
 
+<div class="my-2">
+	@message
+	<br />
+	@errorMessage
+</div>
+
 @code {
     [Parameter]
     public long id { get; set; }
@@ -119,6 +125,9 @@
     Gry game = new();
     List<BoughtItem> boughtItems = new();
     private string blank = "\t";
+
+    private string message = string.Empty;
+    private string errorMessage = string.Empty;
 
     protected override void OnInitialized()
     {
@@ -141,15 +150,47 @@
 
     private void ShowEditBoughtItem(long gameId, int itemId)
     {
-        navManager.NavigateTo($"/zakupione/{gameId}/{nick}/{itemId}/edytuj");
+        if (pro != null)
+        {
+            navManager.NavigateTo($"/zakupione/{gameId}/{nick}/pro/{itemId}/edytuj");
+        }
+        else
+        {
+            navManager.NavigateTo($"/zakupione/{gameId}/{nick}/{itemId}/edytuj");
+        }
+    }
+
+    private void ShowAddBoughItem(long gameId)
+    {
+        if (pro != null)
+        {
+            navManager.NavigateTo($"/zakupione/{gameId}/{nick}/pro/dodaj");
+        }
+        else
+        {
+            navManager.NavigateTo($"/zakupione/{gameId}/{nick}/dodaj");
+        }
     }
 
     private void DeleteBoughtItem(long gameId, int itemId)
     {
-    //    string result = boughtItemService.Delete(gameId, itemId);
-    //    if(result = "ok")
-    //    {
-    //        message = "Pomyślnie usunięto";
-    //    }
+        string result = boughtItemService.Delete(gameId, itemId);
+        if(result == "ok")
+        {
+            message = "Pomyślnie usunięto!";
+            if (pro != null)
+            {
+                navManager.NavigateTo($"/gry/{id}/{nick}/{pro}", true);
+            }
+            else
+            {
+                navManager.NavigateTo($"/gry/{id}/{nick}", true);
+            }
+        }
+        else
+        {
+            message = "Nie udało się usunąć.";
+            errorMessage = result;
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿@page "/zakupione/{gameId:long}/{nick}/{itemId:int}/edytuj"
+﻿@page "/zakupione/{gameId:long}/{nick}/{pro}/{itemId:int}/edytuj"
+@page "/zakupione/{gameId:long}/{nick}/{pro}/dodaj"
+@page "/zakupione/{gameId:long}/{nick}/{itemId:int}/edytuj"
 @page "/zakupione/{gameId:long}/{nick}/dodaj"
 @using Services
 @using Models
@@ -9,7 +11,7 @@
 <PageTitle>Zakupiony przedmiot</PageTitle>
 <h3>@Title</h3>
 
-<h3>@gameId @itemId @boughtItem.id_przed</h3>
+@*<h3>@gameId @itemId @boughtItem.id_przed</h3>*@
 
 <EditForm Model="boughtItem" OnValidSubmit="Save">
 	<label>Zakupiony przedmiot</label>
@@ -40,6 +42,8 @@
 	public string nick { get; set; }
 	[Parameter]
 	public int? itemId { get; set; }
+	[Parameter]
+	public string? pro { get; set; }
 
 	BoughtItem boughtItem = new();
 	List<Przedmioty> items = new();
@@ -68,7 +72,14 @@
 			if (result == "okUpdate")
 			{
 				message = "Pomyślnie zaktualizowano zakupiony przedmiot.";
-				//navManager.NavigateTo($"/gry/{gameId}/{nick}");
+				if (pro != null)
+				{
+					navManager.NavigateTo($"/gry/{gameId}/{nick}/pro");
+				}
+				else
+				{
+					navManager.NavigateTo($"/gry/{gameId}/{nick}");
+				}
 			}
 			else
 			{
@@ -82,7 +93,14 @@
 			if (result == "okAdd")
 			{
 				message = "Pomyślnie dodano przedmiot.";
-				//navManager.NavigateTo($"/gry/{gameId}/{nick}");
+				if (pro != null)
+				{
+					navManager.NavigateTo($"/gry/{gameId}/{nick}/pro");
+				}
+				else
+				{
+					navManager.NavigateTo($"/gry/{gameId}/{nick}");
+				}
 			}
 			else
 			{
@@ -94,6 +112,15 @@
 
 	private void Cancel()
 	{
+		if (pro != null)
+		{
+			navManager.NavigateTo($"/gry/{gameId}/{nick}/pro", true);
+		}
+		else
+		{
+			navManager.NavigateTo($"/gry/{gameId}/{nick}", true);
+		}
+		
 
 	}
 }
