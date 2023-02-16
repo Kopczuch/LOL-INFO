@@ -46,10 +46,10 @@
 				{
 					<tr>
 						<td>
-							<img src="@przedmiotyService.GetById(component.id_przed).Ikona" width="64px" height="64px" />
+							<img src="@przedmiotyService.GetById(component.id_przed).Ikona" width="64px" height="64px" @onclick="(() =>ShowItem(component.id_przed))" />
 						</td>
 						<td>
-							@przedmiotyService.GetById(component.id_przed).Nazwa
+							<a href="#" @onclick="(() =>ShowItem(component.id_przed))">@przedmiotyService.GetById(component.id_przed).Nazwa</a>
 						</td>
 						<td>
 							<button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditComponent(component.id))"></button>
@@ -103,6 +103,11 @@
 	private void ShowEditComponent(int id)
 	{
 		navManager.NavigateTo($"/przedmioty/komponenty/{id}/edytuj");
+	}
+
+	private void ShowItem(int id)
+	{
+		navManager.NavigateTo($"/przedmioty/{id}", true, true);
 	}
 
 	private async Task DeleteComponent(int idKomponentu)

@@ -1,7 +1,7 @@
 ﻿@using ZBD.Authentication
 @using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider authStateProvider
-@using Models
+@inject NavigationManager navManager
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -14,13 +14,20 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-@*        <AuthorizeView Roles="Administrator, User">
+@*        <AuthorizeView Roles="Administrator, User">   
             <Authorized>*@
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="gracze/Quavenox" Match="NavLinkMatch.All">
-                        <span class="oi oi-home" aria-hidden="true"></span> Moje Dane
-                    </NavLink>
-                </div>
+                <AuthorizeView>
+                    <Authorized>
+                        <div class="nav-item px-3">
+                            @{
+                                string href = $"gracze/{context.User.Identity.Name}";
+                            }
+                            <NavLink class="nav-link" href="@href" Match="NavLinkMatch.All">
+                                <span class="oi oi-home" aria-hidden="true"></span> Moje Dane
+                            </NavLink>
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
 @*            </Authorized>
         </AuthorizeView>*@
        @* <div class="nav-item px-3">
