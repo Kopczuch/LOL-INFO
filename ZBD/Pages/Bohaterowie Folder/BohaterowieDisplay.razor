@@ -71,9 +71,9 @@
                                     {
                                         <tr>
                                             <td>
-                                                <img src="@counter.Ikona" width="64px" height="64px" />
+                                                <img src="@counter.Ikona" width="64px" height="64px" @onclick="(() => GoToCounter(counter.Nazwa))" />
                                             </td>
-                                            <td>@counter.Nazwa</td>
+                                            <td><a href="#" @onclick="(() => GoToCounter(counter.Nazwa))">@counter.Nazwa</a></td>
                                             <td>
                                                 <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditCounter(champion.Nazwa, counter.Nazwa))"></button>
                                             </td>
@@ -123,6 +123,11 @@
     private void ShowAddCounter(string bohater)
     {
         navManager.NavigateTo($"/bohaterowie/kontry/{bohater}/dodaj");
+    }
+
+    private void GoToCounter(string bohater)
+    {
+        navManager.NavigateTo($"/bohaterowie/{bohater}", true, true);
     }
 
     private async Task DeleteCounter(string bohater, string kontra)

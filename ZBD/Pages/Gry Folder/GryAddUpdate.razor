@@ -46,15 +46,15 @@
 				<tr>
 					<td>
 						<label>Godziny</label>
-						<InputNumber id="time" @bind-Value="hours" class="form-control" min=0></InputNumber>
+						<InputNumber id="time" @bind-Value="hours" class="form-control" min=0 max=23></InputNumber>
 					</td>
 					<td>
 						<label>Minuty</label>
-						<InputNumber id="time" @bind-Value="minutes" class="form-control" min=0></InputNumber>
+						<InputNumber id="time" @bind-Value="minutes" class="form-control" min=0 max=59></InputNumber>
 					</td>
 					<td>
 						<label>Sekundy</label>
-						<InputNumber id="time" @bind-Value="seconds" class="form-control" min=0></InputNumber>
+						<InputNumber id="time" @bind-Value="seconds" class="form-control" min=0 max=59></InputNumber>
 					</td>
 				</tr>
 			</tbody>
@@ -123,6 +123,7 @@
 
 	List<Bohaterowie> champions = new List<Bohaterowie>();
 	Gry game = new();
+
 	TimeSpan gameTime;
 
 	protected override void OnInitialized()
@@ -148,12 +149,12 @@
 			if (result == "okAdd")
 			{
 				message = "Pomyślnie dodano grę.";
-				navManager.NavigateTo($"/gracze/{nick}");
+				navManager.NavigateTo($"/gracze/{nick}", true);
 			}
 			else if (result == "okUpdate")
 			{
 				message = "Pomyślnie zaktualizowano grę.";
-				navManager.NavigateTo($"/gracze/{nick}");
+				navManager.NavigateTo($"/gracze/{nick}", true);
 			}
 			else
 			{

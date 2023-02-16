@@ -41,8 +41,8 @@ namespace ZBD.Services
                     cmd.Parameters.AddWithValue("@time", game.CzasGry);
                     cmd.Parameters.AddWithValue("@dmg", game.ZadaneObrazenia);
                     cmd.Parameters.AddWithValue("@side", game.Strona);
-                    cmd.Parameters.AddWithValue("@kDr", game.ZabojstwaDruzyny);
-                    cmd.Parameters.AddWithValue("@dDr", game.ZgonyDruzyny);
+					cmd.Parameters.AddWithValue("@kDr", game.ZabojstwaDruzyny != null ? game.ZabojstwaDruzyny : DBNull.Value);
+                    cmd.Parameters.AddWithValue("@dDr", game.ZgonyDruzyny != null ? game.ZgonyDruzyny : DBNull.Value);
                     cmd.Parameters.AddWithValue("@champ", game.BohaterowieNazwa);
                     connection.Open();
                     SqlDataReader rdr = cmd.ExecuteReader();
