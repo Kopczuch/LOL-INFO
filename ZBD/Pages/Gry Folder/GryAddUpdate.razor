@@ -1,0 +1,217 @@
+﻿@page "/gry/{id:long}/edytuj/{nick}/{pro}"
+@page "/gry/{id:long}/edytuj/{nick}"
+@page "/gry/dodaj/{nick}/{pro}"
+@page "/gry/dodaj/{nick}"
+
+@using Services
+@using Models
+@inject IGryService gryService
+@inject IBohaterowieService bohaterowieService
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navManager
+
+<PageTitle>@Title</PageTitle>
+<h3>@Title</h3>
+
+<EditForm Model="game" OnValidSubmit="Save">
+	<DataAnnotationsValidator />
+	<ValidationSummary />
+
+	<label id="res">Resultat</label>
+	<InputSelect id="res" @bind-Value="game.Rezultat" class="form-control">
+		<option value="0" hidden>Wybierz</option>
+		<option value="WIN">WIN</option>
+		<option value="LOSE">LOSE</option>
+	</InputSelect>
+
+	<label id="kills">Zabójstwa</label>
+	<InputNumber id="kills" @bind-Value="game.Zabojstwa" class="form-control" min=0 max=@short.MaxValue />
+
+	<label id="deaths">Śmierci</label>
+	<InputNumber id="deaths" @bind-Value="game.Smierci" class="form-control" min=0 max=@short.MaxValue />
+
+	<label id="ass">Asysty</label>
+	<InputNumber id="ass" @bind-Value="game.Asysty" class="form-control" min=0 max=@short.MaxValue />
+
+	<label id="cs">Creep Score</label>
+	<InputNumber id="cs" @bind-Value="game.CreepScore" class="form-control" min=0 max=@short.MaxValue />
+
+	<label id="gold">Zdobyte złoto</label>
+	<InputNumber id="gold" @bind-Value="game.ZdobyteZloto" class="form-control" min=0 max=@int.MaxValue />
+
+	<label for="time">Czas gry</label>
+	<div class="table">
+		<table class="table">
+			<tbody>
+				<tr>
+					<td>
+						<label>Godziny</label>
+						<InputNumber id="time" @bind-Value="hours" class="form-control" min=0></InputNumber>
+					</td>
+					<td>
+						<label>Minuty</label>
+						<InputNumber id="time" @bind-Value="minutes" class="form-control" min=0></InputNumber>
+					</td>
+					<td>
+						<label>Sekundy</label>
+						<InputNumber id="time" @bind-Value="seconds" class="form-control" min=0></InputNumber>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<label id="dmg">Zadane obrażenia</label>
+	<InputNumber id="dmg" @bind-Value="game.ZadaneObrazenia" class="form-control" min=0 />
+
+	<label id="kDr">Zabójstwa drużyny</label>
+	<InputNumber id="kDr" @bind-Value="game.ZabojstwaDruzyny" class="form-control" min=0 />
+
+	<label id="dDr">Zgony drużyny</label>
+	<InputNumber id="dDr" @bind-Value="game.ZgonyDruzyny" class="form-control" min=0 />
+
+	<label id="side">Strona</label>
+	<InputSelect id="side" @bind-Value="game.Strona" class="form-control">
+		<option value="0" hidden>Wybierz</option>
+		<option value="BLUE">BLUE</option>
+		<option value="RED">RED</option>
+	</InputSelect>
+
+	<label id="champ">Bohater</label>
+	<InputSelect id="champ" @bind-Value="game.BohaterowieNazwa" class="form-control">
+		<option value="0" hidden>Wybierz</option>
+		@foreach (var champion in champions)
+		{
+			<option value="@champion.Nazwa">@champion.Nazwa</option>
+		}
+	</InputSelect>
+	
+
+	<div class="my-2">
+		@message
+		<br />
+		@errorMessage
+	</div>
+
+	<div class="my-2">
+		<button type="submit" class="btn btn-primary">Zatwierdź</button>&nbsp;
+		@if (id != 0)
+		{
+			<button type="button" class="btn btn-danger" @onclick="async ()=> await Delete(game)">Usuń</button>
+		}
+		&nbsp;<button type="button" class="btn btn-secondary" @onclick="(() => Cancel())">Anuluj</button>
+	</div>
+	
+
+</EditForm>
+
+@code {
+	[Parameter]
+	public long id { get; set; }
+	[Parameter]
+	public string? pro { get; set; }
+	[Parameter]
+	public string nick { get; set; }
+
+	private int hours;
+	private int minutes;
+	private int seconds;
+
+	private string message = string.Empty;
+	private string errorMessage = string.Empty;
+	private string Title = "Dodaj grę";
+
+	List<Bohaterowie> champions = new List<Bohaterowie>();
+	Gry game = new();
+	TimeSpan gameTime;
+
+	protected override void OnInitialized()
+	{
+		if (id != 0)
+		{
+			Title = "Edytuj grę";
+			game = gryService.GetById(id);
+		}
+		champions = bohaterowieService.GetAll();
+		base.OnInitialized();
+	}
+
+	private void Save()
+	{
+		gameTime = new TimeSpan(hours, minutes, seconds);
+		game.CzasGry = gameTime;
+		message = "Zaczekaj...";
+		string result = string.Empty;
+		if (pro == null)
+		{
+			result = gryService.AddUpdate(game, 'N', nick);
+			if (result == "okAdd")
+			{
+				message = "Pomyślnie dodano grę.";
+				navManager.NavigateTo($"/gracze/{nick}");
+			}
+			else if (result == "okUpdate")
+			{
+				message = "Pomyślnie zaktualizowano grę.";
+				navManager.NavigateTo($"/gracze/{nick}");
+			}
+			else
+			{
+				message = "Nie udało się zapisać.";
+				errorMessage = result;
+			}
+		}
+		else
+		{
+			result = gryService.AddUpdate(game, 'T', nick);
+			if (result == "okAdd")
+			{
+				message = "Pomyślnie dodano grę.";
+				navManager.NavigateTo($"/graczezawodowi/{nick}");
+			}
+			else if (result == "okUpdate")
+			{
+				message = "Pomyślnie zaktualizowano grę.";
+				navManager.NavigateTo($"/graczezawodowi/{nick}");
+			}
+			else
+			{
+				message = "Nie udało się zapisać.";
+				errorMessage = result;
+			}
+		}
+
+
+	}
+
+	private async Task Delete(Gry game)
+	{
+		bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Czy jesteś pewien, że chcesz usunąć grę?");
+		if (confirmed)
+		{
+			if (gryService.Delete(game.IdMeczu))
+			{
+				if (pro == null)
+				{
+					navManager.NavigateTo($"/gracze/{nick}", true);
+				}
+				else
+				{
+					navManager.NavigateTo($"/graczezawodowi/{nick}", true);
+				}
+			}
+		}
+	}
+
+	private void Cancel()
+	{
+		if (pro == null)
+		{
+			navManager.NavigateTo($"/gracze/{nick}", true);
+		}
+		else
+		{
+			navManager.NavigateTo($"/graczezawodowi/{nick}", true);
+		}
+	}
+}

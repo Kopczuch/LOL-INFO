@@ -1,0 +1,99 @@
+﻿@page "/zakupione/{gameId:long}/{nick}/{itemId:int}/edytuj"
+@page "/zakupione/{gameId:long}/{nick}/dodaj"
+@using Services
+@using Models
+@inject IBoughtItemService boughtService
+@inject IPrzedmiotyService przedmiotyService
+@inject NavigationManager navManager
+
+<PageTitle>Zakupiony przedmiot</PageTitle>
+<h3>@Title</h3>
+
+<h3>@gameId @itemId @boughtItem.id_przed</h3>
+
+<EditForm Model="boughtItem" OnValidSubmit="Save">
+	<label>Zakupiony przedmiot</label>
+	<InputSelect @bind-Value=boughtItem.id_przed class="form-control">
+		@*<option value="0" hidden>Wybierz</option>*@
+		@foreach (var item in items)
+		{
+			<option value="@item.IdPrzed">@item.Nazwa</option>
+		}
+	</InputSelect>
+
+	<br />
+	<button type="submit" class="btn btn-primary">Zatwierdź</button>&nbsp;&nbsp;
+	<button type="button" class="btn btn-secondary" @onclick="(() => Cancel())">Anuluj</button>
+
+</EditForm>
+
+<div class="my-2">
+	@message
+	<br />
+	@errorMessage
+</div>
+
+@code {
+	[Parameter]
+	public long gameId { get; set; }
+	[Parameter]
+	public string nick { get; set; }
+	[Parameter]
+	public int? itemId { get; set; }
+
+	BoughtItem boughtItem = new();
+	List<Przedmioty> items = new();
+
+	private string message = string.Empty;
+	private string errorMessage = string.Empty;
+	private string Title = "Dodaj zakupiony przedmiot";
+
+	protected override void OnInitialized()
+	{
+		if (itemId != null)
+		{
+			Title = "Edytuj kupiony przedmiot";
+		}
+		items = przedmiotyService.GetAllAlfabetical();
+		//boughtItem = przedmiotyService.GetById(itemId.GetValueOrDefault());
+		base.OnInitialized();
+	}
+
+	private void Save()
+	{
+		string result = string.Empty;
+		if (itemId != null)
+		{
+			result = boughtService.Update(gameId, itemId.GetValueOrDefault(), boughtItem.id_przed);
+			if (result == "okUpdate")
+			{
+				message = "Pomyślnie zaktualizowano zakupiony przedmiot.";
+				//navManager.NavigateTo($"/gry/{gameId}/{nick}");
+			}
+			else
+			{
+				message = "Nie udało się zaktualizować.";
+				errorMessage = result;
+			}
+		}
+		else
+		{
+			result = boughtService.Add(gameId, boughtItem.id_przed);
+			if (result == "okAdd")
+			{
+				message = "Pomyślnie dodano przedmiot.";
+				//navManager.NavigateTo($"/gry/{gameId}/{nick}");
+			}
+			else
+			{
+				message = "Nie udało się dodać.";
+				errorMessage = result;
+			}
+		}
+	}
+
+	private void Cancel()
+	{
+
+	}
+}

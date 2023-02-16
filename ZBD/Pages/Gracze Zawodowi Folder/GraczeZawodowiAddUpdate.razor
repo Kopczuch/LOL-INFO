@@ -28,7 +28,7 @@
 
 	<label id="role">Rola</label>
 	<InputSelect id="role" @bind-Value="pro.Rola" class="form-control">
-		<option value="@string.Empty">Wybierz</option>
+		<option value="@string.Empty" hidden>Wybierz</option>
 		@foreach (var role in roles)
 		{
 			<option value="@role">@role</option>
@@ -37,7 +37,7 @@
 
 	<label id="residency">Rezydencja</label>
 	<InputSelect id="residency" @bind-Value="pro.Rezydencja" class="form-control">
-		<option value="@string.Empty">Wybierz</option>
+		<option value="@string.Empty" hidden>Wybierz</option>
 		@foreach (var residency in residencies)
 		{
 			<option value="@residency">@residency</option>
@@ -52,21 +52,29 @@
 
 	<label id="teamID">ID Drużyny</label>
 	<InputSelect id="teamID" @bind-Value="pro.IdDruzyny" class="form-control">
-		<option value="@string.Empty">Wybierz</option>
+		<option value="@string.Empty" hidden>Wybierz</option>
 		@foreach (var team in teams)
 		{
 			<option value="@team.IdDruzyny">@team.IdDruzyny</option>
 		}
 	</InputSelect>
 
-	<label id="favChamp">Ulubiony bohater</label>
-	<InputSelect id="favChamp" @bind-Value="pro.UlubionyBohater" class="form-control">
-		<option value="@string.Empty">Wybierz</option>
-		@foreach (var champion in champions)
-		{
-			<option value="@champion.Nazwa">@champion.Nazwa</option>
-		}
-	</InputSelect>
+	<label for="fav">Ulubiony bohater</label>
+	<InputCheckbox id="fav" @bind-Value="Fav" class="form-check-input"></InputCheckbox>
+	@if (Fav)
+	{
+		<InputSelect id="ulubionybohater" @bind-Value="pro.UlubionyBohater" class="form-control">
+			<option value="0" hidden>Wybierz</option>
+			@foreach (var champion in champions)
+			{
+				<option value="@champion.Nazwa">@champion.Nazwa</option>
+			}
+		</InputSelect>
+	}
+	else
+	{
+		noFav();
+	}
 
 	<div class="my-2">
 		@message
@@ -92,6 +100,7 @@
 	private string errorMessage = string.Empty;
 	GraczeZawodowi pro = new();
 	private string Title = "Dodaj Pro Gracza";
+	private bool Fav;
 
 	private List<Bohaterowie> champions = new();
 	private List<Druzyny> teams = new();
@@ -131,6 +140,10 @@
 		{
 			Title = "Edytuj" + nick;
 			pro = proService.GetByNick(nick);
+		}
+		if (pro.UlubionyBohater != null)
+		{
+			Fav = true;
 		}
 		base.OnInitialized();
 	}
@@ -179,5 +192,10 @@
 		{
 			navManager.NavigateTo("/graczezawodowi", true);
 		}
+	}
+
+	private void noFav()
+	{
+		pro.UlubionyBohater = null;
 	}
 }

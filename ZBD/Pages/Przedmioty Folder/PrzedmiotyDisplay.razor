@@ -30,24 +30,23 @@
 
 @if(components.Count >= 1)
 {
+	<label>
 	<h4>Komponenty:</h4>
-}
-
-<table class="table">
-	<thead>
-		<tr>
-			<th></th>
-			<th></th>
-			<th></th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		@foreach (var component in components)
-		{
-			<tr>
+		<table class="table">
+			<thead>
+				<tr>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var component in components)
+				{
+					<tr>
 						<td>
-							<img src="@przedmiotyService.GetById(component.id_przed).Ikona" width="64px" height="64px"/>
+							<img src="@przedmiotyService.GetById(component.id_przed).Ikona" width="64px" height="64px" />
 						</td>
 						<td>
 							@przedmiotyService.GetById(component.id_przed).Nazwa
@@ -58,10 +57,13 @@
 						<td>
 							<button class="btn btn-danger oi oi-trash" @onclick="async ()=> await DeleteComponent(component.id)"></button>
 						</td>
-			</tr>
-		}
-	</tbody>
-</table>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</label>
+}
+
 
 <br />
 <button class="btn btn-primary" @onclick="(() => ShowAddComponent(item.IdPrzed))">Dodaj komponent</button>

@@ -63,7 +63,7 @@ namespace ZBD.Services
         public GraczeZawodowi GetByNick(string nick)
         {
             return _ctx.GraczeZawodowis
-                .Include(p => p.GryIdMeczus)
+                .Include(p => p.GryIdMeczus.OrderByDescending(g => g.IdMeczu))
                 .FirstOrDefault(p => p.Nick == nick);
         }
 

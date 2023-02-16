@@ -33,7 +33,7 @@ namespace ZBD.Services
         public Gracze GetByNick(string nick)
         {
             return _ctx.Graczes
-                .Include(g => g.GryIdMeczus)
+                .Include(g => g.GryIdMeczus.OrderByDescending(g => g.IdMeczu))
                 .FirstOrDefault(n => n.Nick == nick);
 
         }

@@ -3,11 +3,11 @@
 @using Models
 @using Microsoft.Data.SqlClient
 @inject IGraczeService graczeService
+@inject IBohaterowieService bohaterowieService
 @inject NavigationManager navManager
-@inject IJSRuntime js
 
 <PageTitle>Moje Dane</PageTitle>
-<h3>@player.Nick <button class="btn btn-primary" @onclick="(() => ShowPlayer(player.Nick))"><i class="oi oi-pencil"></i></button></h3>
+<h3>@player.Nick <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowPlayer(player.Nick))"></button></h3>
 
 <div class="table">
     <table class="table">
@@ -21,22 +21,23 @@
         <tr>
             <td>@player.Dywizja</td>
             <td>@player.Poziom</td>
-            <td>@player.UlubionyBohater</td>
-            <td>@wr%</td>
+            <td><a href="/bohaterowie/@player.UlubionyBohater">@player.UlubionyBohater</a></td>
+            <td>@Math.Round(decimal.Parse(@wr),2)%</td>
             <td>@avgKda</td>
         </tr>
     </table>
 </div>
 
-
 <br />
+<button class="btn btn-primary" @onclick="(() => ShowAddGame())">Dodaj grę</button>
 <br />
 
 <div class="table">
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Id meczu</th>
+                @*<th>Id meczu</th>*@
+                <th>Bohater</th>
                 <th>Rezultat</th>
                 <th>Z/Ś/A</th>
                 <th>CS</th>
@@ -44,25 +45,34 @@
                 <th>Czas gry</th>
                 <th>Zadane obrażenia</th>
                 <th>Strona</th>
-                <th>Bohater</th>
+                @*<th>Bohater</th>*@
                 <th></th>
             </tr>
         </thead>
         <tbody>
                 @foreach (var game in player.GryIdMeczus)
                 {
-                    
                     <tr>
-                        <td>@game.IdMeczu</td>
-                        <td>@game.Rezultat</td>
-                        <td>@game.Zabojstwa/@game.Smierci/@game.Asysty</td>
-                        <td>@game.CreepScore</td>
-                        <td>@game.ZdobyteZloto</td>
-                        <td>@game.CzasGry</td>
-                        <td>@game.ZadaneObrazenia</td>
-                        <td>@game.Strona</td>
-                        <td>@game.BohaterowieNazwa</td>
-                        <td>
+                        @*<td>@game.IdMeczu</td>*@
+                        @if(game.BohaterowieNazwa != null)
+                        {
+                            <td>
+                                <img src="@getPlayed(game.BohaterowieNazwa)" width="96px" height="96px" />
+                            </td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                        <td valign="middle">@game.Rezultat</td>
+                        <td valign="middle">@game.Zabojstwa/@game.Smierci/@game.Asysty</td>
+                        <td valign="middle">@game.CreepScore</td>
+                        <td valign="middle">@game.ZdobyteZloto</td>
+                        <td valign="middle">@game.CzasGry</td>
+                        <td valign="middle">@game.ZadaneObrazenia</td>
+                        <td valign="middle">@game.Strona</td>
+                        @*<td>@game.BohaterowieNazwa</td>*@
+                        <td valign="middle">
                         <button class="btn btn-primary oi oi-info" @onclick="(() => ShowGame(game.IdMeczu))"></button>
                         </td>
                     </tr>
@@ -78,6 +88,7 @@
     private string? wr { get; set; }
     private string? avgKda { get; set; }
 
+
     protected override void OnInitialized()
     {
         player = graczeService.GetByNick(nick);
@@ -87,6 +98,13 @@
         base.OnInitialized();
     }
 
+    private string getPlayed(string name)
+    {
+        Bohaterowie champion = new();
+        champion = bohaterowieService.GetByName(name);
+        return champion.Ikona;
+    }
+
     private void ShowPlayer(string nick)
     {
         navManager.NavigateTo($"gracze/{nick}/edytuj");
@@ -94,6 +112,11 @@
 
     private void ShowGame(long id)
     {
-        navManager.NavigateTo($"gry/{id}");
+        navManager.NavigateTo($"gry/{id}/{nick}");
+    }
+
+    private void ShowAddGame()
+    {
+        navManager.NavigateTo($"gry/dodaj/{nick}");
     }
 }

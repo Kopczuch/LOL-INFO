@@ -13,15 +13,15 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <AuthorizeView Roles="Administrator, User">
-            <Authorized>
+@*        <AuthorizeView Roles="Administrator, User">
+            <Authorized>*@
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="gracze/Quavenox" Match="NavLinkMatch.All">
                         <span class="oi oi-home" aria-hidden="true"></span> Moje Dane
                     </NavLink>
                 </div>
-            </Authorized>
-        </AuthorizeView>
+@*            </Authorized>
+        </AuthorizeView>*@
        @* <div class="nav-item px-3">
             <NavLink class="nav-link" href="counter">
                 <span class="oi oi-plus" aria-hidden="true"></span> Counter

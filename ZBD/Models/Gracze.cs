@@ -12,7 +12,7 @@ public partial class Gracze
     [Required (ErrorMessage = "Dywizja jest wymagana.")]
     public string Dywizja { get; set; } = null!;
 
-    [Required, Range(1, short.MaxValue, ErrorMessage = "Poziom przyjmuje wartości >= 1")]
+    [Required, Range(1, short.MaxValue, ErrorMessage = "Poziom przyjmuje tylko wartości dodatnie")]
     public short Poziom { get; set; }
 
     public string? UlubionyBohater { get; set; }

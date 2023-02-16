@@ -4,9 +4,9 @@ namespace ZBD.Services
 {
     public interface IGryService
     {
-        public bool AddUpdate(Gry game);
+        public string AddUpdate(Gry game, char pro, string nick);
         public Gry GetById(long id);
         public List<Gry> GetAll();
-        public bool Update(Gracze player);
+        public bool Delete(long id);
     }
 }

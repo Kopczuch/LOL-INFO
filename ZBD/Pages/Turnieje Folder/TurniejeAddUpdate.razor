@@ -19,7 +19,7 @@
 
 	<label id="type">Rodzaj</label>
 	<InputSelect id="type" @bind-Value="tournament.Rodzaj" class="form-control">
-		<option value="@string.Empty">Wybierz</option>
+		<option value="@string.Empty" hidden>Wybierz</option>
 		@foreach (var type in types)
 		{
 			<option value="@type">@type</option>

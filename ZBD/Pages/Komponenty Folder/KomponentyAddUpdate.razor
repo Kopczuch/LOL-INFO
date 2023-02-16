@@ -15,29 +15,19 @@
 <EditForm Model="component" OnValidSubmit="Save">
 	<label for="komponent">Komponent</label>
 	<InputSelect id="komponent" @bind-Value="component.IdKomponentu" class="form-control">
-		<option value="0">Wybierz</option>
+		<option value="0" hidden>Wybierz</option>
 		@foreach (var item in items)
 		{
 			<option value="@item.IdPrzed">@item.Nazwa</option>
 		}
 	</InputSelect>
 
-	<div class="my-2">
-				@message
-				<br />
-				@errorMessage
-			</div>
-
-			<div class="my-2">
-				<button type="submit" class="btn btn-primary">Zatwierdź</button>&nbsp;
-				@*@if(id != null)
-				{
-					<button type="button" class="btn btn-danger" @onclick="async ()=> await Delete(champion)">Usuń</button>
-				}*@
-				&nbsp;<button type="button" class="btn btn-secondary" @onclick="(() => Cancel(component.IdPrzed))">Anuluj</button>
-			</div>
+	<br />
+	<button type="submit" class="btn btn-primary">Zatwierdź</button>&nbsp;&nbsp;
+	<button type="button" class="btn btn-secondary" @onclick="(() => Cancel(component.IdPrzed))">Anuluj</button>
 
 </EditForm>
+
 
 @code {
 	[Parameter]

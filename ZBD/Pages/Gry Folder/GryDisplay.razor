@@ -1,16 +1,22 @@
-﻿@page "/gry/{id:long}"
+﻿@page "/gry/{id:long}/{nick}/{pro}"
+@page "/gry/{id:long}/{nick}"
 @using Services
 @using Models
 @inject IGryService gryService
+@inject IBohaterowieService bohaterowieService
+@inject IBoughtItemService boughtItemService
+@inject NavigationManager navManager
 
 <PageTitle>Szczegóły gry</PageTitle>
-<h3>Szczegóły gry</h3>
+<h3>
+    Szczegóły gry
+    <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditGame(id))"></button>
+</h3>
 
 <div class="table">
-    <table class="table table-striped">
+    <table class="table">
         <thead>
             <tr>
-                <th>Id meczu</th>
                 <th>Rezultat</th>
                 <th>Z/Ś/A</th>
                 <th>CS</th>
@@ -18,13 +24,11 @@
                 <th>Czas gry</th>
                 <th>Zadane obrażenia</th>
                 <th>Strona</th>
-                <th>Bohater</th>
-                <th></th>
+                <th>Id meczu</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>@game.IdMeczu</td>
                 <td>@game.Rezultat</td>
                 <td>@game.Zabojstwa/@game.Smierci/@game.Asysty</td>
                 <td>@game.CreepScore</td>
@@ -32,34 +36,120 @@
                 <td>@game.CzasGry</td>
                 <td>@game.ZadaneObrazenia</td>
                 <td>@game.Strona</td>
-                <td>@game.BohaterowieNazwa</td>
+                <td>@game.IdMeczu</td>
             </tr>
         </tbody>
     </table>
 </div>
 
-<div>
-    @*<label><strong>Zakupione przedmioty:</strong></label>
+<div class="table">
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Zabójstwa drużyny: @game.ZabojstwaDruzyny</th>
+                <th>Zgony drużyny: @game.ZgonyDruzyny</th>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+@*<div>
+    <label><strong>Zakupione przedmioty:</strong></label>
     @foreach (var itemId in game.IdZakupionegoPrzedmiotus)
     {
         <ul>
             <li>@itemId</li>
         </ul>
-    }*@
+    }
+</div>*@
+
+<div class="table">
+    <table class="table">
+        <thead>
+            <tr>
+                <td><strong>Bohater: </strong><a href="/bohaterowie/@game.BohaterowieNazwa">@game.BohaterowieNazwa</a></td>
+                <th>Zakupione przedmioty</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    @if(game.BohaterowieNazwa != null)
+                    {
+                        <img src="@getPlayed(game.BohaterowieNazwa)" width="96" height="96"/>
+                    }
+                </td>
+                <td valign="middle">
+                    @foreach (var boughtItem in boughtItems)
+                    {
+                        <img src="@boughtItem.ikona" width="64" height="64"/> @blank
+                    }
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+                @foreach (var boughtItem in boughtItems)
+                {
+                    <tr>
+                        <td></td>
+                        <td>
+                            <a href="/przedmioty/@boughtItem.id_przed">@boughtItem.nazwa</a>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary oi oi-pencil" @onclick="(() => ShowEditBoughtItem(game.IdMeczu, boughtItem.id_przed))"></button>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger oi oi-trash" @onclick="(() => DeleteBoughtItem(game.IdMeczu, boughtItem.id_przed))"></button>
+                        </td>
+                    </tr> 
+                }
+        </tbody>
+    </table>
 </div>
-
-<div>Zabójstwa drużyny: @game.ZabojstwaDruzyny</div>
-
 
 @code {
     [Parameter]
     public long id { get; set; }
+    [Parameter]
+    public string nick { get; set; }
+    [Parameter]
+    public string? pro { get; set; }
     Gry game = new();
+    List<BoughtItem> boughtItems = new();
+    private string blank = "\t";
 
     protected override void OnInitialized()
     {
         game = gryService.GetById(id);
-
+        boughtItems = boughtItemService.GetAll(id);
         base.OnInitialized();
+    }
+
+    private string getPlayed(string name)
+    {
+        Bohaterowie champion = new();
+        champion = bohaterowieService.GetByName(name);
+        return champion.Ikona;
+    }
+
+    private void ShowEditGame(long id)
+    {
+        navManager.NavigateTo($"/gry/{id}/edytuj/{nick}/{pro}");
+    }
+
+    private void ShowEditBoughtItem(long gameId, int itemId)
+    {
+        navManager.NavigateTo($"/zakupione/{gameId}/{nick}/{itemId}/edytuj");
+    }
+
+    private void DeleteBoughtItem(long gameId, int itemId)
+    {
+    //    string result = boughtItemService.Delete(gameId, itemId);
+    //    if(result = "ok")
+    //    {
+    //        message = "Pomyślnie usunięto";
+    //    }
     }
 }

@@ -38,6 +38,7 @@ builder.Services.AddTransient<IKomponentyPrzedmiotowService, KomponentyPrzedmiot
 builder.Services.AddTransient<IDruzynyService, DruzynyService>();
 builder.Services.AddTransient<ITurniejeService, TurniejeService>();
 builder.Services.AddTransient<IGraczeZawodowiService, GraczeZawodowiService>();
+builder.Services.AddTransient<IBoughtItemService, BoughtItemService>();
 
 var app = builder.Build();
 

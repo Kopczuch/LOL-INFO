@@ -13,24 +13,39 @@
 	<ValidationSummary />
 	<div>
 		<label for="dywizja">Dywizja</label>
-		<InputText id="dywizja" @bind-Value="player.Dywizja" class="form-control"></InputText>
+		<InputSelect id="dywizja" @bind-Value="player.Dywizja" class="form-control">
+			@foreach (var division in divisions)
+			{
+				<option value="@division">@division</option>
+			}
+		</InputSelect>
 	</div>
 	<div>
 		<label for="poziom">Poziom</label>
 		<InputNumber id="poziom" @bind-Value="player.Poziom" class="form-control" min=1></InputNumber>
 	</div>
 	<div>
-		<label for="ulubionybohater">Ulubiony bohater</label>
-		<InputSelect id="ulubionybohater" @bind-Value="player.UlubionyBohater" class="form-control">
-			<option value="@None">Brak</option>
-			@foreach (var champion in champions)
-			{
-				<option value="@champion.Nazwa">@champion.Nazwa</option>
-			}
-		</InputSelect>
+		<label for="fav">Ulubiony bohater</label>
+		<InputCheckbox id="fav" @bind-Value="Fav" class="form-check-input"></InputCheckbox>
+		@if(Fav)
+		{
+			<InputSelect id="ulubionybohater" @bind-Value="player.UlubionyBohater" class="form-control">
+				<option value="0" hidden>Wybierz</option>
+				@foreach (var champion in champions)
+				{
+					<option value="@champion.Nazwa">@champion.Nazwa</option>
+				}
+			</InputSelect>
+		}
+		else
+		{
+			noFav();
+		}
 	</div>
 	<br />
 	<button type="submit" class="btn btn-primary" @onclick="Save">Aktualizuj</button>
+	&nbsp;
+	<button type="button" class="btn btn-secondary" @onclick="(() => Cancel())">Anuluj</button>
 </EditForm>
 
 
@@ -38,14 +53,50 @@
 	[Parameter]
 	public string? nick { get; set; }
 	private string message = string.Empty;
-	private string None = null;
+
 	Gracze player = new();
 	List<Bohaterowie> champions = new();
+	private bool Fav;
+
+	List<string> divisions = new List<string>
+	{
+		"Challenger",
+		"Grand Master",
+		"Master",
+		"Diamond I",
+		"Diamond II",
+		"Diamond III",
+		"Diamond IV",
+		"Platinum I",
+		"Platinum II",
+		"Platinum III",
+		"Platinum IV",
+		"Gold I",
+		"Gold II",
+		"Gold III",
+		"Gold IV",
+		"Silver I",
+		"Silver II",
+		"Silver III",
+		"Silver IV",
+		"Bronze I",
+		"Bronze II",
+		"Bronze III",
+		"Bronze IV",
+		"Iron I",
+		"Iron II",
+		"Iron III",
+		"Iron IV",
+	};
 
 	protected override void OnInitialized()
 	{
 		player = graczeService.GetByNick(nick);
 		champions = bohaterowieService.GetAll();
+		if (player.UlubionyBohater != null)
+		{
+			Fav = true;
+		}
 		base.OnInitialized();
 	}
 
@@ -62,5 +113,15 @@
 		{
 			message = "Nie udało się zapisać zmian.";
 		}
+	}
+
+	private void Cancel()
+	{
+		navManager.NavigateTo($"/gracze/{nick}", true);
+	}
+
+	private void noFav()
+	{
+		player.UlubionyBohater = null;
 	}
 }

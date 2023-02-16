@@ -25,7 +25,7 @@
 
 	<label id="league">Liga</label>
 	<InputSelect id="league" @bind-Value="team.Liga" class="form-control">
-		<option value="@string.Empty">Wybierz</option>
+		<option value="@string.Empty" hidden>Wybierz</option>
 		@foreach(var league in leagues)
 		{
 			<option value="@league">@league</option>

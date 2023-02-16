@@ -2,6 +2,7 @@
 @using Services
 @using Models
 @inject IGraczeZawodowiService proService
+@inject IBohaterowieService bohaterowieService
 @inject NavigationManager navManager
 
 <PageTitle>@pro.Nick</PageTitle>
@@ -52,6 +53,14 @@
                                 <td><strong>Ulubiona postać</strong></td>
                                 <td>@pro.UlubionyBohater</td>
                             </tr>
+                            <tr>
+                                <td><strong>Procent wygranych</strong></td>
+                                <td>@Math.Round(decimal.Parse(wr))%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>KDA</strong></td>
+                                <td>@avgKda</td>
+                            </tr>
                         </tbody>
                     </table>
                 </td>
@@ -61,48 +70,65 @@
     
 </div>
 
-
 <br />
-<h5><strong>Gry:</strong></h5>
+<button class="btn btn-primary" @onclick="(() => ShowAddGame())">Dodaj grę</button>
+<br />
+<br />
 
-<div class="table">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Id meczu</th>
-                <th>Rezultat</th>
-                <th>Zabójstwa/Śmierci/Asysty</th>
-                <th>CS</th>
-                <th>Zdobyte złoto</th>
-                <th>Czas gry</th>
-                <th>Zadane obrażenia</th>
-                <th>Strona</th>
-                <th>Bohater</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var game in pro.GryIdMeczus)
-            {
+@if (pro.GryIdMeczus.Count() > 0)
+{
+    <h5><strong>Gry:</strong></h5>
 
+    <div class="table">
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                    <td>@game.IdMeczu</td>
-                    <td>@game.Rezultat</td>
-                    <td>@game.Zabojstwa/@game.Smierci/@game.Asysty</td>
-                    <td>@game.CreepScore</td>
-                    <td>@game.ZdobyteZloto</td>
-                    <td>@game.CzasGry</td>
-                    <td>@game.ZadaneObrazenia</td>
-                    <td>@game.Strona</td>
-                    <td>@game.BohaterowieNazwa</td>
-                    <td>
-                        <button class="btn btn-primary oi oi-info" @onclick="(() => ShowGame(game.IdMeczu))"></button>
-                    </td>
+                    @*<th>Id meczu</th>*@
+                    <th>Bohater</th>
+                    <th>Rezultat</th>
+                    <th>Z/Ś/A</th>
+                    <th>CS</th>
+                    <th>Zdobyte złoto</th>
+                    <th>Czas gry</th>
+                    <th>Zadane obrażenia</th>
+                    <th>Strona</th>
+                    @*<th>Bohater</th>*@
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+                @foreach (var game in pro.GryIdMeczus)
+                {
+                    <tr>
+                        @*<td>@game.IdMeczu</td>*@
+                        @if (game.BohaterowieNazwa != null)
+                        {
+                            <td>
+                                <img src="@getPlayed(game.BohaterowieNazwa)" width="96px" height="96px" />
+                            </td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                        <td valign="middle">@game.Rezultat</td>
+                        <td valign="middle">@game.Zabojstwa/@game.Smierci/@game.Asysty</td>
+                        <td valign="middle">@game.CreepScore</td>
+                        <td valign="middle">@game.ZdobyteZloto</td>
+                        <td valign="middle">@game.CzasGry</td>
+                        <td valign="middle">@game.ZadaneObrazenia</td>
+                        <td valign="middle">@game.Strona</td>
+                        @*<td>@game.BohaterowieNazwa</td>*@
+                        <td valign="middle">
+                            <button class="btn btn-primary oi oi-info" @onclick="(() => ShowGame(game.IdMeczu))"></button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
 
 @code {
     [Parameter]
@@ -126,6 +152,18 @@
 
     private void ShowGame(long id)
     {
-        navManager.NavigateTo($"/gry/{id}");
+        navManager.NavigateTo($"/gry/{id}/{nick}/pro");
+    }
+
+    private void ShowAddGame()
+    {
+        navManager.NavigateTo($"/gry/dodaj/{nick}/pro");
+    }
+
+    private string getPlayed(string name)
+    {
+        Bohaterowie champion = new();
+        champion = bohaterowieService.GetByName(name);
+        return champion.Ikona;
     }
 }

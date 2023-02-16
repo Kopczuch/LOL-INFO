@@ -11,7 +11,7 @@
 <EditForm Model="newCounter" OnValidSubmit="Save">
 	<label for="kontra">Kontra</label>
 	<InputSelect id="kontra" @bind-Value="newCounter.nowaKontra" class="form-control">
-		<option value="@string.Empty">Wybierz</option>
+		<option value="@string.Empty" hidden>Wybierz</option>
 		@foreach (var champion in champions)
 		{
 			<option value="@champion.Nazwa">@champion.Nazwa</option>
