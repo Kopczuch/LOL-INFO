@@ -1,7 +1,9 @@
 ﻿@page "/gracze/{nick}"
+@attribute [Authorize]
 @using Services
 @using Models
 @using Microsoft.Data.SqlClient
+@using ZBD.Authentication;
 @inject IGraczeService graczeService
 @inject IBohaterowieService bohaterowieService
 @inject NavigationManager navManager
@@ -50,33 +52,33 @@
             </tr>
         </thead>
         <tbody>
-                @foreach (var game in player.GryIdMeczus)
-                {
-                    <tr>
-                        @*<td>@game.IdMeczu</td>*@
-                        @if(game.BohaterowieNazwa != null)
-                        {
-                            <td>
-                                <a href="/bohaterowie/@game.BohaterowieNazwa"><img src="@getPlayed(game.BohaterowieNazwa)" width="96px" height="96px" /></a>
-                            </td>
-                        }
-                        else
-                        {
-                            <td></td>
-                        }
-                        <td valign="middle">@game.Rezultat</td>
-                        <td valign="middle">@game.Zabojstwa/@game.Smierci/@game.Asysty</td>
-                        <td valign="middle">@game.CreepScore</td>
-                        <td valign="middle">@game.ZdobyteZloto</td>
-                        <td valign="middle">@game.CzasGry</td>
-                        <td valign="middle">@game.ZadaneObrazenia</td>
-                        <td valign="middle">@game.Strona</td>
-                        @*<td>@game.BohaterowieNazwa</td>*@
-                        <td valign="middle">
-                        <button class="btn btn-primary oi oi-info" @onclick="(() => ShowGame(game.IdMeczu))"></button>
+            @foreach (var game in player.GryIdMeczus)
+            {
+                <tr>
+                    @*<td>@game.IdMeczu</td>*@
+                    @if (game.BohaterowieNazwa != null)
+                    {
+                        <td>
+                            <a href="/bohaterowie/@game.BohaterowieNazwa"><img src="@getPlayed(game.BohaterowieNazwa)" width="96px" height="96px" /></a>
                         </td>
-                    </tr>
-                }   
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                    <td valign="middle">@game.Rezultat</td>
+                    <td valign="middle">@game.Zabojstwa/@game.Smierci/@game.Asysty</td>
+                    <td valign="middle">@game.CreepScore</td>
+                    <td valign="middle">@game.ZdobyteZloto</td>
+                    <td valign="middle">@game.CzasGry</td>
+                    <td valign="middle">@game.ZadaneObrazenia</td>
+                    <td valign="middle">@game.Strona</td>
+                    @*<td>@game.BohaterowieNazwa</td>*@
+                    <td valign="middle">
+                        <button class="btn btn-primary oi oi-info" @onclick="(() => ShowGame(game.IdMeczu))"></button>
+                    </td>
+                </tr>
+            }
         </tbody>
     </table>
 </div>
@@ -84,18 +86,41 @@
 @code {
     [Parameter]
     public string? nick { get; set; }
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+    public string? current_user;
     Gracze player = new Gracze();
     private string? wr { get; set; }
     private string? avgKda { get; set; }
 
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        player = graczeService.GetByNick(nick);
-        wr = graczeService.GetWr(nick, 'N');
-        avgKda = graczeService.GetAvgKda(nick, 'N');
 
-        base.OnInitialized();
+        var authState = await authenticationState;
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            current_user = user.Identity.Name;
+
+            if (current_user != nick)
+            {
+                navManager.NavigateTo($"/gracze/{current_user}", true);
+            }
+            else
+            {
+                player = graczeService.GetByNick(nick);
+                wr = graczeService.GetWr(nick, 'N');
+                avgKda = graczeService.GetAvgKda(nick, 'N');
+
+                base.OnInitialized();
+            }
+        }
+        else
+        {
+            navManager.NavigateTo("/login", true);
+        }
     }
 
     private string getPlayed(string name)

@@ -9,20 +9,24 @@
 
 <div class="row">
     <div class="col-lg-4 offset-lg-4 pt-4 pb-4 border">
-        <div class="mb-3 text-center">
-            <h3>LOGIN</h3>
-        </div>
-        <div class="mb-3">
-            <label>Nazwa użytkownika</label>
-            <input @bind="model.UserName" class="form-control" placeholder="Nazwa użytkownika" />
-        </div>
-        <div class="mb-3">
-            <label>Hasło</label>
-            <input @bind="model.Password" type="password" class="form-control" placeholder="Hasło" />
-        </div>
-        <div class="mb-3 d-grid gap-2">
-            <button @onclick="Authenticate" class="btn btn-primary">Zaloguj</button>
-        </div>
+        <EditForm Model="@login_details" OnValidSubmit="Authenticate">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="mb-3 text-center">
+                <h3>LOGIN</h3>
+            </div>
+            <div class="mb-3">
+                <label>Nazwa użytkownika</label>
+                <InputText @bind-Value="login_details.UserName" class="form-control" placeholder="Nazwa użytkownika" />
+            </div>
+            <div class="mb-3">
+                <label>Hasło</label>
+                <InputText @bind-Value="login_details.Password" type="password" class="form-control" placeholder="Hasło" />
+            </div>
+            <div class="mb-3 d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Zaloguj</button>&nbsp;
+            </div>
+        </EditForm>
         <div class="mb-3 d-grid gap-2">
             <button @onclick="Register" class="btn btn-secondary">Utwórz nowe konto</button>
         </div>
@@ -30,18 +34,13 @@
 </div>
 
 @code {
-    private class Model
-    {
-        public string UserName { get; set; }
-        public string Password { get; set; }
-    }
 
-    private Model model = new Model();
+    private LoginDetails login_details = new LoginDetails();
 
     private async Task Authenticate()
     {
-        DaneLogowania? userAccount = daneLogowaniaService.GetUserByName(model.UserName);
-        if (userAccount == null || userAccount.Haslo != model.Password)
+        DaneLogowania? userAccount = daneLogowaniaService.GetUserByName(login_details.UserName);
+        if (userAccount == null || userAccount.Haslo != login_details.Password)
         {
             await js.InvokeVoidAsync("alert", "Podano niepoprawną nazwę użytkownika lub hasło");
             return;

@@ -2,45 +2,135 @@
 @using ZBD.Authentication
 @using ZBD.Services
 @using ZBD.Models
+@inject IBohaterowieService bohaterowieService
+@inject IRegisterService registerService
 @inject IDaneLogowaniaService daneLogowaniaService
 @inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navManager
 
 <div class="row">
     <div class="col-lg-4 offset-lg-4 pt-4 pb-4 border">
+        <EditForm Model="@register_details" OnValidSubmit="CreateAccount">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
         <div class="mb-3 text-center">
             <h3>REGISTER</h3>
         </div>
         <div class="mb-3">
             <label>Nazwa użytkownika</label>
-            <input @bind="newUser.Nick" class="form-control" placeholder="Nazwa użytkownika" />
+            <InputText @bind-Value="register_details.UserName" class="form-control" placeholder="Nazwa użytkownika" />
         </div>
         <div class="mb-3">
             <label>Hasło</label>
-            <input @bind="newUser.Haslo" type="password" class="form-control" placeholder="Hasło" />
+            <InputText @bind-Value="register_details.Password" type="password" class="form-control" placeholder="Hasło" />
+        </div>
+        <div class="mb-3">
+		    <label>Dywizja</label>
+		    <InputSelect id="dywizja" @bind-Value="register_details.Dywizja" class="form-control">
+                <option value="0" hidden/>
+			    @foreach (var division in divisions)
+			    {
+				    <option value="@division">@division</option>
+			    }
+		    </InputSelect>
+        </div>
+        <div class="mb-3">
+            <label>Poziom</label>
+            <InputNumber id="poziom" @bind-Value="register_details.Poziom" class="form-control" min=1></InputNumber>
+        </div>
+        <div class="mb-3">
+                <label for>Ulubiony bohater</label>
+                <InputCheckbox id="fav" @bind-Value="Fav" class="form-check-input"></InputCheckbox>
+                @if (Fav)
+                {
+                    <InputSelect id="ulubionybohater" @bind-Value="register_details.UlubionyBohater" class="form-control">
+                        <option value="0" hidden>Wybierz</option>
+                        @foreach (var champion in champions)
+                        {
+                            <option value="@champion.Nazwa">@champion.Nazwa</option>
+                        }
+                    </InputSelect>
+                }
+                else
+                {
+                    noFav();
+                }
         </div>
         <div class="mb-3 d-grid gap-2">
-            <button @onclick="CreateAccount" class="btn btn-secondary">Utwórz konto</button>
+            <button type="submit" class="btn btn-secondary">Utwórz konto</button>&nbsp;
         </div>
+        </EditForm>
     </div>
 </div>
 
+
+
+
+
 @code {
-    public DaneLogowania newUser = new DaneLogowania();
+    private RegisterDetails register_details = new RegisterDetails(); 
+
+    List<Bohaterowie> champions = new();
+    private bool Fav;
+
+    List<string> divisions = new List<string>
+    {
+        "Challenger",
+        "Grand Master",
+        "Master",
+        "Diamond I",
+        "Diamond II",
+        "Diamond III",
+        "Diamond IV",
+        "Platinum I",
+        "Platinum II",
+        "Platinum III",
+        "Platinum IV",
+        "Gold I",
+        "Gold II",
+        "Gold III",
+        "Gold IV",
+        "Silver I",
+        "Silver II",
+        "Silver III",
+        "Silver IV",
+        "Bronze I",
+        "Bronze II",
+        "Bronze III",
+        "Bronze IV",
+        "Iron I",
+        "Iron II",
+        "Iron III",
+        "Iron IV",
+        "Unranked"
+    };
+
+    protected override void OnInitialized()
+    {
+        champions = bohaterowieService.GetAll();
+    }
 
     private async Task CreateAccount()
     {
-        newUser.Rola = "user";
-        string res = daneLogowaniaService.AddUser(newUser);
+        Console.WriteLine("TUTAJ1!");
+        string res = registerService.RegisterUser(register_details);
         if (res == "okAdd")
         {
+            Console.WriteLine("TUTAJ!");
+            DaneLogowania? userAccount = daneLogowaniaService.GetUserByName(register_details.UserName);
             var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
             await customAuthStateProvider.UpdateAuthenticationState(new UserSession
                 {
-                    UserName = newUser.Nick,
-                    Role = newUser.Rola
+                    UserName = userAccount.Nick,
+                    Role = userAccount.Rola
                 });
-            navManager.NavigateTo("/gracze/" + newUser.Nick, true);
+            navManager.NavigateTo("/gracze/" + userAccount.Nick, true);
         }
     }
+
+    private void noFav()
+    {
+        register_details.UlubionyBohater = null;
+    }
+
 }

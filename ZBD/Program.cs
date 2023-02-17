@@ -39,6 +39,7 @@ builder.Services.AddTransient<IDruzynyService, DruzynyService>();
 builder.Services.AddTransient<ITurniejeService, TurniejeService>();
 builder.Services.AddTransient<IGraczeZawodowiService, GraczeZawodowiService>();
 builder.Services.AddTransient<IBoughtItemService, BoughtItemService>();
+builder.Services.AddTransient<IRegisterService, RegisterService>();
 
 var app = builder.Build();
 
