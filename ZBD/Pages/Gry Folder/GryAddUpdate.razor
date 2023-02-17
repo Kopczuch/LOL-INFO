@@ -146,12 +146,12 @@
 			if (result == "okAdd")
 			{
 				message = "Pomyślnie dodano grę.";
-				navManager.NavigateTo($"/gracze/{nick}");
+				navManager.NavigateTo($"/gracze/{nick}", true);
 			}
 			else if (result == "okUpdate")
 			{
 				message = "Pomyślnie zaktualizowano grę.";
-				navManager.NavigateTo($"/gracze/{nick}");
+				navManager.NavigateTo($"/gracze/{nick}", true);
 			}
 			else
 			{
@@ -165,12 +165,12 @@
 			if (result == "okAdd")
 			{
 				message = "Pomyślnie dodano grę.";
-				navManager.NavigateTo($"/graczezawodowi/{nick}");
+				navManager.NavigateTo($"/graczezawodowi/{nick}", true);
 			}
 			else if (result == "okUpdate")
 			{
 				message = "Pomyślnie zaktualizowano grę.";
-				navManager.NavigateTo($"/graczezawodowi/{nick}");
+				navManager.NavigateTo($"/graczezawodowi/{nick}", true);
 			}
 			else
 			{

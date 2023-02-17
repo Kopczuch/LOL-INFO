@@ -42,8 +42,10 @@ public partial class Gry
 
     public short? ZgonyDruzyny { get; set; }
 
+    [Required(ErrorMessage = "Strona jest wymagana.")]
     public string? Strona { get; set; }
 
+    [Required(ErrorMessage = "Bohater jest wymagany.")]
     public string? BohaterowieNazwa { get; set; }
 
     public virtual Bohaterowie? BohaterowieNazwaNavigation { get; set; }
