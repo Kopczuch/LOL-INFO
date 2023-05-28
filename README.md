@@ -8,3 +8,8 @@
 ![image](https://github.com/Kopczuch/ZBD/assets/55816369/9e24b764-c7f2-4637-b014-77d20b32730d)
 ![image](https://github.com/Kopczuch/ZBD/assets/55816369/73c4d61c-befc-4b9f-889f-e337e6fed99b)
 ![image](https://github.com/Kopczuch/ZBD/assets/55816369/a0cdf135-698a-4456-af44-5dba01830ae8)
+![image](https://github.com/Kopczuch/ZBD/assets/55816369/6442a41c-9daa-4347-8ae6-bc5fc11228cc)
+![image](https://github.com/Kopczuch/ZBD/assets/55816369/1e01ee1f-c6e9-41d4-8c6c-1a2b8eee53be)
+![image](https://github.com/Kopczuch/ZBD/assets/55816369/4fc0fd4c-f0d5-48ad-838f-58ff8cb60379)
+![image](https://github.com/Kopczuch/ZBD/assets/55816369/5ba0ddf9-2a37-4086-9474-0b793e688851)
+![image](https://github.com/Kopczuch/ZBD/assets/55816369/f435c064-60f2-4c64-984c-bf30f71ca1fd)
