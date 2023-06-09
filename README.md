@@ -1,5 +1,5 @@
 # LoL Info
-## Aplikacja stworzona na potrzeby projektu z zajęć Zarządzanie bazami SQL i NoSQL do zarządzania informacjami z gry League of Legends, wzorowana na stronie [op.gg](https://www.op.gg/)
+## The application was created for a project in the SQL and NoSQL Database Management course to manage information from the game League of Legends. It was inspired by the [op.gg](https://www.op.gg/) website
 
 ![image](https://github.com/Kopczuch/ZBD/assets/55816369/25d481e6-ec95-47a4-b489-6ae8b151474f)
 ![image](https://github.com/Kopczuch/ZBD/assets/55816369/934a4d08-5961-44a8-bb63-34e487c5b129)
